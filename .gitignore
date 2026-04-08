@@ -1,4 +1,4 @@
-# User config layer — symlinked to ~/.slicker-user/ (private repo)
+# User config (copied from user.example/ on first install)
 user/
 
 # Backups of existing configs created during install

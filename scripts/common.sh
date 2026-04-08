@@ -3,8 +3,7 @@
 # Sourced by all scripts. Expects nothing — resolves paths itself.
 
 SLICKER_DIR="${SLICKER_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
-SLICKER_USER_DIR="$HOME/.slicker-user"
-SLICKER_USER_LINK="$SLICKER_DIR/user"
+SLICKER_USER_DIR="$SLICKER_DIR/user"
 SLICKER_THEME_DIR="$SLICKER_DIR/theme"
 
 RED='\033[0;31m'

@@ -1,6 +1,6 @@
 # ─── Slicker Base Brewfile ─────────────────────────────────────────────
 # Core dependencies for slicker configs.
-# User-specific apps go in ~/.slicker-user/Brewfile
+# User-specific apps go in user/Brewfile
 
 # ─── Core Tools ──────────────────────────────────────────────────────
 

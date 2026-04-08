@@ -18,6 +18,7 @@ Opinionated macOS dotfiles framework with a two-layer config system. Base config
 | git     | `[include] path = ...user.gitconfig`       | `~/.slicker-user/git/user.gitconfig`  |
 | ghostty | `config-file = ~/.slicker-user/ghostty/user.conf` | `~/.slicker-user/ghostty/user.conf` |
 | nvim    | `pcall(require, "user")`                   | `~/.slicker-user/nvim/lua/user/init.lua` |
+| starship| `STARSHIP_CONFIG` env var in user.zsh      | `~/.slicker-user/starship/starship.toml` |
 | tmux    | `source-file -q ~/.slicker-user/tmux/user.conf` | `~/.slicker-user/tmux/user.conf`  |
 
 All includes fail silently if user file doesn't exist.

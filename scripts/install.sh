@@ -25,31 +25,11 @@ fi
 
 # User config directory
 if [[ -d "$SLICKER_USER_DIR" ]]; then
-  ok "User config found at $SLICKER_USER_DIR"
-elif [[ -n "${SLICKER_USER_REPO:-}" ]]; then
-  info "Cloning user repo from $SLICKER_USER_REPO..."
-  git clone "$SLICKER_USER_REPO" "$SLICKER_USER_DIR"
-  ok "User repo cloned."
+  ok "User config found."
 else
-  info "No user config found. Copying template..."
+  info "Copying user template..."
   cp -r "$SLICKER_DIR/user.example" "$SLICKER_USER_DIR"
-  warn "Created $SLICKER_USER_DIR from template."
-  warn "Edit it, then optionally make it a git repo:"
-  echo ""
-  echo "  cd $SLICKER_USER_DIR"
-  echo "  git init && git add -A && git commit -m 'init'"
-  echo ""
-fi
-
-# User symlink
-if [[ -L "$SLICKER_USER_LINK" ]]; then
-  ok "user/ symlink exists."
-elif [[ -e "$SLICKER_USER_LINK" ]]; then
-  err "user/ exists but is not a symlink. Remove it and re-run."
-  exit 1
-else
-  ln -s "$SLICKER_USER_DIR" "$SLICKER_USER_LINK"
-  ok "Created symlink: user/ → $SLICKER_USER_DIR"
+  ok "Created user/ from template."
 fi
 
 # Source meta.sh if available
@@ -60,43 +40,12 @@ if [[ -f "$SLICKER_USER_DIR/meta.sh" ]]; then
 fi
 
 # Backup existing configs
-targets=(
-  "$HOME/.zshrc"
-  "$HOME/.gitconfig"
-  "$HOME/.config/nvim"
-  "$HOME/.config/tmux"
-  "$HOME/.config/ghostty"
-)
-
-needs_backup=false
-for target in "${targets[@]}"; do
-  if [[ -e "$target" ]] && ! is_slicker_symlink "$target"; then
-    needs_backup=true
-    break
-  fi
-done
-
-if $needs_backup; then
-  backup_dir="$SLICKER_DIR/backups/$(date +%Y%m%d_%H%M%S)"
-  mkdir -p "$backup_dir"
-  info "Backing up existing configs to ${backup_dir#$SLICKER_DIR/}/"
-
-  for target in "${targets[@]}"; do
-    if [[ -e "$target" ]] && ! is_slicker_symlink "$target"; then
-      rel="${target#$HOME/}"
-      dest="$backup_dir/$rel"
-      mkdir -p "$(dirname "$dest")"
-      mv "$target" "$dest"
-      echo "  $rel → ${backup_dir#$SLICKER_DIR/}/$rel"
-    fi
-  done
-  ok "Backup complete."
-fi
+"$SLICKER_DIR/scripts/backup.sh"
 
 # Stow
 info "Stowing configs into \$HOME..."
 cd "$SLICKER_DIR"
-stow -v -t "$HOME" -d configs zsh git ghostty nvim tmux 2>&1 | while read -r line; do
+stow -v -t "$HOME" -d configs zsh git ghostty nvim tmux starship 2>&1 | while read -r line; do
   echo "  $line"
 done
 ok "Configs stowed."

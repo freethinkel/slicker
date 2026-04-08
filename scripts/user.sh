@@ -7,29 +7,22 @@ user_init() {
 
   if [[ -n "$repo_url" ]]; then
     if [[ -d "$SLICKER_USER_DIR" ]]; then
-      err "$SLICKER_USER_DIR already exists. Remove it first to re-clone."
+      err "user/ already exists. Remove it first to re-clone."
       exit 1
     fi
     git clone "$repo_url" "$SLICKER_USER_DIR"
     ok "Cloned user repo."
   elif [[ -d "$SLICKER_USER_DIR" ]]; then
-    ok "User config found at $SLICKER_USER_DIR"
+    ok "User config found."
   else
     cp -r "$SLICKER_DIR/user.example" "$SLICKER_USER_DIR"
-    warn "Created $SLICKER_USER_DIR from template."
+    ok "Created user/ from template."
   fi
-
-  if [[ ! -L "$SLICKER_USER_LINK" ]]; then
-    ln -s "$SLICKER_USER_DIR" "$SLICKER_USER_LINK"
-    ok "Created symlink: user/ → $SLICKER_USER_DIR"
-  fi
-
-  ok "User config ready at $SLICKER_USER_DIR"
 }
 
 user_edit() {
   local editor="${EDITOR:-vim}"
-  info "Opening $SLICKER_USER_DIR in $editor..."
+  info "Opening user/ in $editor..."
   "$editor" "$SLICKER_USER_DIR"
 }
 

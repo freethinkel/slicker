@@ -13,28 +13,12 @@ if git -C "$SLICKER_DIR" rev-parse --is-inside-work-tree &>/dev/null; then
 fi
 echo ""
 
-# User symlink
-echo -e "${BOLD}User symlink:${RESET}"
-if [[ -L "$SLICKER_USER_LINK" ]]; then
-  echo "  user/ → $(readlink "$SLICKER_USER_LINK")"
-else
-  echo "  not linked"
-fi
-echo ""
-
-# User repo
-echo -e "${BOLD}User repo:${RESET} $SLICKER_USER_DIR"
+# User config
+echo -e "${BOLD}User config:${RESET}"
 if [[ -d "$SLICKER_USER_DIR" ]]; then
-  if git -C "$SLICKER_USER_DIR" rev-parse --is-inside-work-tree &>/dev/null; then
-    ubranch="$(git -C "$SLICKER_USER_DIR" branch --show-current 2>/dev/null || echo "detached")"
-    status_line="$(git -C "$SLICKER_USER_DIR" status --porcelain | wc -l | tr -d ' ')"
-    echo "  branch: $ubranch"
-    echo "  uncommitted changes: $status_line file(s)"
-  else
-    echo "  exists (not a git repo)"
-  fi
+  echo -e "  ${GREEN}present${RESET}"
 else
-  echo "  not found"
+  echo -e "  ${YELLOW}not found${RESET} (run: slicker install)"
 fi
 echo ""
 
@@ -49,7 +33,7 @@ echo ""
 
 # Stow links
 echo -e "${BOLD}Stowed configs:${RESET}"
-for pkg in zsh git ghostty nvim tmux; do
+for pkg in zsh git ghostty nvim tmux starship; do
   pkg_dir="$SLICKER_DIR/configs/$pkg"
   if [[ -d "$pkg_dir" ]]; then
     echo -n "  $pkg: "

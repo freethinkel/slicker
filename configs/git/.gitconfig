@@ -24,4 +24,4 @@
 # ─── User overrides (name, email, signing, etc) ──────────────────────
 
 [include]
-    path = ~/.slicker-user/git/user.gitconfig
+    path = ~/.config/slicker/user/git/user.gitconfig

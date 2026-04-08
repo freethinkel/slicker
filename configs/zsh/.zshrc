@@ -43,6 +43,12 @@ case "${MACHINE:-}" in
         ;;
 esac
 
+# ─── Starship prompt ─────────────────────────────────────────────────
+
+if command -v starship &>/dev/null; then
+  eval "$(starship init zsh)"
+fi
+
 # ─── User overrides (loaded last, always wins) ───────────────────────
 
 [[ -f "$SLICKER_ROOT/user/zsh/user.zsh" ]] && source "$SLICKER_ROOT/user/zsh/user.zsh"
