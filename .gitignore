@@ -1,0 +1,16 @@
+# User config layer — symlinked to ~/.slicker-user/ (private repo)
+user/
+
+# Backups of existing configs created during install
+backups/
+
+# Generated theme files (created by `slicker theme set`)
+theme/
+
+# macOS
+.DS_Store
+
+# Editor
+*.swp
+*.swo
+*~

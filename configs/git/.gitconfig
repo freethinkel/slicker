@@ -1,0 +1,27 @@
+# ─── Slicker Git Config ───────────────────────────────────────────────
+# Base layer — managed by slicker. Personal overrides go in user/git/user.gitconfig
+
+[core]
+    autocrlf = input
+    editor = nvim
+
+[init]
+    defaultBranch = main
+
+[pull]
+    rebase = true
+
+[push]
+    autoSetupRemote = true
+
+[alias]
+    co = checkout
+    br = branch
+    ci = commit
+    st = status
+    lg = log --oneline --graph --decorate -20
+
+# ─── User overrides (name, email, signing, etc) ──────────────────────
+
+[include]
+    path = ~/.slicker-user/git/user.gitconfig

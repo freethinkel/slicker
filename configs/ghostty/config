@@ -1,0 +1,16 @@
+# ─── Slicker Ghostty Config ───────────────────────────────────────────
+# Base layer — managed by slicker. Personal overrides go in user/ghostty/user.conf
+
+window-padding-x = 8
+window-padding-y = 8
+window-decoration = true
+confirm-close-surface = false
+copy-on-select = clipboard
+
+# ─── Slicker theme override ──────────────────────────────────────────
+
+config-file = ~/.config/slicker/theme/ghostty.conf
+
+# ─── User overrides (font, theme, keybinds) ──────────────────────────
+
+config-file = ~/.slicker-user/ghostty/user.conf

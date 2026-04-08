@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+export SLICKER_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+source "$SLICKER_DIR/scripts/common.sh"
+
+usage() {
+  cat <<EOF
+${BOLD}slicker${RESET} — opinionated macOS dotfiles framework
+
+${BOLD}Usage:${RESET}
+  slicker <command> [options]
+
+${BOLD}Commands:${RESET}
+  install              Full install (brew, stow, symlinks)
+  update               Pull latest configs + re-stow (never touches user/)
+  user init [repo-url] Clone or initialize user config repo
+  user edit            Open ~/.slicker-user in \$EDITOR
+  theme list           List available themes
+  theme set <name>     Set active theme (generates from palette)
+  theme current        Show current theme
+  status               Show link status and user repo info
+  help                 Show this help message
+EOF
+}
+
+case "${1:-}" in
+install) exec "$SLICKER_DIR/scripts/install.sh" "${@:2}" ;;
+update) exec "$SLICKER_DIR/scripts/update.sh" "${@:2}" ;;
+theme) exec "$SLICKER_DIR/scripts/theme.sh" "${@:2}" ;;
+user) exec "$SLICKER_DIR/scripts/user.sh" "${@:2}" ;;
+status) exec "$SLICKER_DIR/scripts/status.sh" "${@:2}" ;;
+help | --help | -h | "") usage ;;
+*)
+  err "Unknown command: $1"
+  usage
+  exit 1
+  ;;
+esac

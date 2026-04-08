@@ -1,0 +1,13 @@
+# ─── User Git Overrides ──────────────────────────────────────────────
+# This file is included at the end of slicker's .gitconfig
+
+[user]
+    name = Your Name
+    email = you@example.com
+
+# [commit]
+#     gpgsign = true
+# [gpg]
+#     format = ssh
+# [user]
+#     signingkey = ~/.ssh/id_ed25519.pub
