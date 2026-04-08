@@ -23,3 +23,4 @@ brew "wget"
 # ─── Terminal ────────────────────────────────────────────────────────
 
 cask "ghostty"
+cask "raycast"

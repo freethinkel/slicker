@@ -1,5 +1,10 @@
 # ─── Slicker Aliases ──────────────────────────────────────────────────
 
+# ─── Better Alternatives to default cli tool ───
+
+alias ls="eza"
+alias cat="bat"
+
 alias ll='ls -lAh'
 alias l="ll"
 alias la='ls -A'

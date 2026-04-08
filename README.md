@@ -29,7 +29,6 @@ On first run, if `user/` doesn't exist, Slicker copies `user.example/` into it.
 │   ├── zsh/.zshrc
 │   ├── git/.gitconfig
 │   ├── ghostty/config
-│   ├── nvim/.config/nvim/
 │   ├── starship/.config/starship.toml
 │   └── tmux/.config/tmux/
 ├── themes/
@@ -40,7 +39,7 @@ On first run, if `user/` doesn't exist, Slicker copies `user.example/` into it.
 │   ├── zsh/user.zsh
 │   ├── git/user.gitconfig
 │   ├── ghostty/user.conf
-│   ├── nvim/lua/user/plugins/
+│   ├── nvim/.config/nvim/          # full nvim config (lives in user/nvim/)
 │   ├── tmux/user.conf
 │   ├── bin/                    # user scripts (added to PATH)
 │   └── meta.sh
@@ -54,7 +53,8 @@ On first run, if `user/` doesn't exist, Slicker copies `user.example/` into it.
 
 ```bash
 slicker install              # Full setup: brew, stow, user config
-slicker update               # Pull latest configs + re-stow (never touches user/)
+slicker update               # Pull + sync new user configs + re-stow
+slicker update --skip-user   # Same but skip user config sync
 slicker user init [repo-url] # Clone or initialize user config
 slicker user edit            # Open user/ in $EDITOR
 slicker theme list           # List available themes
@@ -72,7 +72,7 @@ Each config type uses its tool's native include mechanism:
 | zsh      | `configs/zsh/.zshrc`             | `source user/zsh/user.zsh`          |
 | git      | `configs/git/.gitconfig`         | `[include] path = ...user.gitconfig`|
 | ghostty  | `configs/ghostty/config`         | `config-file = ...user.conf`        |
-| neovim   | `configs/nvim/.config/nvim/`     | `{ import = "user.plugins" }`       |
+| neovim   | `configs/nvim/.config/nvim` → `user/nvim/` | Entirely in user/ (stow symlinks through) |
 | starship | `configs/starship/.config/starship.toml` | `STARSHIP_CONFIG` env var in user.zsh |
 | tmux     | `configs/tmux/.config/tmux/`     | `source-file -q ...user.conf`       |
 
@@ -94,12 +94,17 @@ Templates in `themes/templates/` use `${THEME_*}` placeholders. Running `slicker
 
 Built-in themes: catppuccin-mocha, tokyo-night, rose-pine.
 
-## Adding New Configs
+## Documentation
 
-1. Create `configs/<tool>/` with files mirroring target layout relative to `$HOME`
-2. End base config with a silent include of `user/<tool>/user.conf`
-3. Create `user.example/<tool>/user.conf` as a template
-4. Add `<tool>` to the stow command in `scripts/install.sh`
+Detailed docs in [`docs/`](docs/):
+
+- [Overview](docs/overview.md) — architecture and how things fit together
+- [Install](docs/install.md) — what `slicker install` does step by step
+- [Update](docs/update.md) — what `slicker update` does, `--skip-user` flag
+- [User Config](docs/user-config.md) — user/ structure, meta.sh, nvim, private repos
+- [Themes](docs/themes.md) — palettes, templates, custom themes
+- [ZSH](docs/zsh.md) — shell config load order, aliases, functions
+- [Adding a Tool](docs/adding-tool.md) — how to add a new tool config
 
 ## License
 

@@ -13,7 +13,7 @@ ${BOLD}Usage:${RESET}
 
 ${BOLD}Commands:${RESET}
   install              Full install (brew, stow, symlinks)
-  update               Pull latest configs + re-stow (never touches user/)
+  update [--skip-user]  Pull latest + re-stow + sync new user configs
   user init [repo-url] Clone or initialize user config
   user edit            Open user/ in \$EDITOR
   theme list           List available themes

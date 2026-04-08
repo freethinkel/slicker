@@ -8,7 +8,9 @@ Opinionated macOS dotfiles framework with a two-layer config system. Base config
 
 ## Architecture
 
-**Stow-based symlinking:** `stow -v -t "$HOME" -d configs zsh git ghostty nvim tmux` creates symlinks from `~` into `configs/`. Files in `configs/<pkg>/` mirror the target filesystem layout relative to `$HOME`.
+**Stow-based symlinking:** `stow -v -t "$HOME" -d configs zsh git ghostty tmux starship` creates symlinks from `~` into `configs/`. Files in `configs/<pkg>/` mirror the target filesystem layout relative to `$HOME`.
+
+**Neovim** uses a symlink inside the stow package: `configs/nvim/.config/nvim` → `user/nvim/`. Stow creates `~/.config/nvim` pointing through this chain, so the full nvim config lives in the user's private repo.
 
 **Two-layer include pattern per tool:**
 
@@ -17,7 +19,7 @@ Opinionated macOS dotfiles framework with a two-layer config system. Base config
 | zsh     | `source "$SLICKER_ROOT/user/zsh/user.zsh"` | `~/.slicker-user/zsh/user.zsh`       |
 | git     | `[include] path = ...user.gitconfig`       | `~/.slicker-user/git/user.gitconfig`  |
 | ghostty | `config-file = ~/.slicker-user/ghostty/user.conf` | `~/.slicker-user/ghostty/user.conf` |
-| nvim    | `pcall(require, "user")`                   | `~/.slicker-user/nvim/lua/user/init.lua` |
+| nvim    | `configs/nvim/.config/nvim` → symlink to `user/nvim/` | `~/.slicker-user/nvim/`              |
 | starship| `STARSHIP_CONFIG` env var in user.zsh      | `~/.slicker-user/starship/starship.toml` |
 | tmux    | `source-file -q ~/.slicker-user/tmux/user.conf` | `~/.slicker-user/tmux/user.conf`  |
 
