@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What is Slicker
 
-Opinionated macOS dotfiles framework with a two-layer config system. Base configs live in `configs/` (managed by slicker), personal overrides live in `user/` (symlinked to `~/.slicker-user/`, a separate private repo). Base configs always source user counterparts last via each tool's native include mechanism, so `git pull` on slicker never breaks personal settings.
+Opinionated macOS dotfiles framework with a two-layer config system. Base configs live in `configs/` (managed by slicker), personal overrides live in `user/` (inside `~/.config/slicker/user/`, a separate private repo). Base configs always source user counterparts last via each tool's native include mechanism, so `git pull` on slicker never breaks personal settings.
 
 ## Architecture
 
@@ -16,18 +16,20 @@ Opinionated macOS dotfiles framework with a two-layer config system. Base config
 
 | Tool    | Include mechanism in base config          | User file path                        |
 |---------|-------------------------------------------|---------------------------------------|
-| zsh     | `source "$SLICKER_ROOT/user/zsh/user.zsh"` | `~/.slicker-user/zsh/user.zsh`       |
-| git     | `[include] path = ...user.gitconfig`       | `~/.slicker-user/git/user.gitconfig`  |
-| ghostty | `config-file = ~/.slicker-user/ghostty/user.conf` | `~/.slicker-user/ghostty/user.conf` |
-| nvim    | `configs/nvim/.config/nvim` → symlink to `user/nvim/` | `~/.slicker-user/nvim/`              |
-| starship| `STARSHIP_CONFIG` env var in user.zsh      | `~/.slicker-user/starship/starship.toml` |
-| tmux    | `source-file -q ~/.slicker-user/tmux/user.conf` | `~/.slicker-user/tmux/user.conf`  |
+| zsh     | `source "$SLICKER_ROOT/user/zsh/user.zsh"` | `~/.config/slicker/user/zsh/user.zsh`       |
+| git     | `[include] path = ...user.gitconfig`       | `~/.config/slicker/user/git/user.gitconfig`  |
+| ghostty | `config-file = ...user/ghostty/user.conf`  | `~/.config/slicker/user/ghostty/user.conf`   |
+| nvim    | `configs/nvim/.config/nvim` → symlink to `user/nvim/` | `~/.config/slicker/user/nvim/`    |
+| starship| `STARSHIP_CONFIG` env var in user.zsh      | `~/.config/slicker/user/starship/starship.toml` |
+| tmux    | `source-file -q ...user/tmux/user.conf`    | `~/.config/slicker/user/tmux/user.conf`      |
+| skhd    | `.load "~/.config/slicker/user/skhd/user.skhdrc"` | `~/.config/slicker/user/skhd/user.skhdrc` |
+| yabai   | `source ~/.config/slicker/user/yabai/user.yabairc` | `~/.config/slicker/user/yabai/user.yabairc` |
 
 All includes fail silently if user file doesn't exist.
 
 **`user/meta.sh`** is sourced early in `.zshrc` to export `MACHINE` and other env vars used for machine-specific branching in base configs.
 
-**Brewfile:** Two-layer — base `Brewfile` in repo root (core tools), optional user `Brewfile` in `~/.slicker-user/Brewfile`. Both run during install.
+**Brewfile:** Two-layer — base `Brewfile` in repo root (core tools), optional user `Brewfile` in `~/.config/slicker/user/Brewfile`. Both run during install.
 
 ## CLI (`bin/slicker`)
 
@@ -44,14 +46,14 @@ Wrappers: `install.sh` → `bin/slicker install`, `update.sh` → `bin/slicker u
 ## Adding a New Config Tool
 
 1. Create `configs/<tool>/` with files mirroring target layout relative to `$HOME`
-2. End base config with a silent include of `~/.slicker-user/<tool>/user.conf` (or equivalent)
+2. End base config with a silent include of `~/.config/slicker/user/<tool>/user.conf` (or equivalent)
 3. Create `user.example/<tool>/user.conf` as template
 4. Add `<tool>` to the `stow` command in `stow_configs()` and the `for pkg in ...` loop in `cmd_status()` in `bin/slicker`
 5. Add row to the two-layer table in README.md
 
 ## Key Conventions
 
-- `user/` directory is gitignored — it's a symlink to `~/.slicker-user/`
+- `user/` directory is gitignored — it's the user's private config repo
 - `SLICKER_ROOT` is resolved from the symlinked `.zshrc` target using zsh's `%x` parameter expansion
 - Neovim user module must return a table with optional `setup()` function
 - Install is idempotent — safe to re-run

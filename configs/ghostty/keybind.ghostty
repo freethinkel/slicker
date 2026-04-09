@@ -1,9 +1,0 @@
-macos-option-as-alt = true
-
-## Shift+Enter for Claude Code
-keybind = shift+enter=text:\x1b\r
-
-keybind = super+option+i=inspector:toggle
-
-# Utility
-keybind = ctrl+o>r=reload_config

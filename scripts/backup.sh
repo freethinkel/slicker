@@ -9,6 +9,9 @@ targets=(
   "$HOME/.config/tmux"
   "$HOME/.config/ghostty"
   "$HOME/.config/starship.toml"
+  "$HOME/.skhdrc"
+  "$HOME/.config/yabai"
+  "$HOME/.config/btop"
 )
 
 needs_backup=false

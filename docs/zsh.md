@@ -33,6 +33,6 @@ Shell configuration is the central part of Slicker.
 Examples:
 ```bash
 # user/zsh/user.zsh
-export STARSHIP_CONFIG="$HOME/.slicker-user/starship/starship.toml"
+export STARSHIP_CONFIG="$HOME/.config/slicker/user/starship/starship.toml"
 alias k="kubectl"
 ```

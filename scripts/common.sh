@@ -18,14 +18,6 @@ ok() { echo -e "${GREEN}[slicker]${RESET} $*"; }
 warn() { echo -e "${YELLOW}[slicker]${RESET} $*"; }
 err() { echo -e "${RED}[slicker]${RESET} $*" >&2; }
 
-# Expand ${VAR} references in a template file using current env
-render_template() {
-  local template="$1"
-  eval "cat <<SLICKER_TPL_EOF
-$(cat "$template")
-SLICKER_TPL_EOF"
-}
-
 # Check if a path is a symlink pointing into slicker's configs/
 is_slicker_symlink() {
   local path="$1"

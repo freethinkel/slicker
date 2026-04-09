@@ -1,0 +1,224 @@
+#!/usr/bin/env bash
+#
+# Pitsos AC control via Home Connect API
+#
+# Setup:
+#   1. Register app at https://developer.home-connect.com/
+#   2. Export HC_CLIENT_ID and HC_CLIENT_SECRET
+#   3. Run: ac authorize
+#   4. Run: ac list  (to find your haId's)
+#   5. Run: ac on <haId>  /  ac off <haId>
+#
+
+set -euo pipefail
+
+# Source .env if present
+for f in "$HOME/.env" "$(dirname "$0")/../.env"; do
+    [[ -f "$f" ]] && set -a && source "$f" && set +a && break
+done
+
+CLIENT_ID="$(echo "${HC_CLIENT_ID:-}" | xargs)"
+CLIENT_SECRET="$(echo "${HC_CLIENT_SECRET:-}" | xargs)"
+REDIRECT_URI="${HC_REDIRECT_URI:-http://localhost:8080}"
+TOKEN_FILE="${HC_TOKEN_FILE:-$HOME/.homeconnect_tokens.json}"
+BASE_URL="${HC_BASE_URL:-https://api.home-connect.com}"
+CT="application/vnd.bsh.sdk.v1+json"
+
+# --- token helpers ---
+
+save_tokens() {
+    local expires_at=$(( $(date +%s) + ${3:-86400} ))
+    cat > "$TOKEN_FILE" <<EOF
+{"access_token":"$1","refresh_token":"$2","expires_at":$expires_at}
+EOF
+    chmod 600 "$TOKEN_FILE"
+}
+
+get_token() {
+    [[ -f "$TOKEN_FILE" ]] || { echo "Run: $0 authorize" >&2; exit 1; }
+
+    local expires_at access_token refresh_token
+    eval "$(python3 -c "
+import json
+d = json.load(open('$TOKEN_FILE'))
+print(f'expires_at={d[\"expires_at\"]}')
+print(f'access_token={d[\"access_token\"]}')
+print(f'refresh_token={d[\"refresh_token\"]}')
+")"
+
+    if (( $(date +%s) >= expires_at )); then
+        local resp
+        resp=$(curl -sf -X POST "${BASE_URL}/security/oauth/token" \
+            -d "grant_type=refresh_token" \
+            -d "refresh_token=${refresh_token}" \
+            -d "client_id=${CLIENT_ID}" \
+            -d "client_secret=${CLIENT_SECRET}")
+
+        access_token=$(echo "$resp" | python3 -c "import sys,json; print(json.load(sys.stdin)['access_token'])")
+        local new_rt
+        new_rt=$(echo "$resp" | python3 -c "import sys,json; print(json.load(sys.stdin).get('refresh_token',''))" 2>/dev/null)
+        [[ -n "$new_rt" && "$new_rt" != "null" ]] && refresh_token="$new_rt"
+        local exp
+        exp=$(echo "$resp" | python3 -c "import sys,json; print(json.load(sys.stdin).get('expires_in',86400))" 2>/dev/null)
+        save_tokens "$access_token" "$refresh_token" "$exp"
+        echo >&2 "Token refreshed."
+    fi
+
+    echo "$access_token"
+}
+
+api() {
+    local method="$1" path="$2"
+    shift 2
+    curl -sf -X "$method" "${BASE_URL}/api/homeappliances${path}" \
+        -H "Authorization: Bearer $(get_token)" \
+        -H "Accept: $CT" \
+        -H "Content-Type: $CT" \
+        "$@"
+}
+
+# --- commands ---
+
+cmd_authorize() {
+    [[ -z "$CLIENT_ID" ]] && { echo "Set HC_CLIENT_ID"; exit 1; }
+
+    local encoded_uri
+    encoded_uri=$(python3 -c "import urllib.parse; print(urllib.parse.quote('${REDIRECT_URI}', safe=''))")
+
+    echo "Open this URL in your browser:"
+    echo ""
+    echo "${BASE_URL}/security/oauth/authorize?response_type=code&client_id=${CLIENT_ID}&redirect_uri=${encoded_uri}&scope=IdentifyAppliance%20Monitor%20Control%20Settings"
+    echo ""
+    read -rp "Paste the authorization code: " code
+
+    local resp
+    resp=$(curl -sf -X POST "${BASE_URL}/security/oauth/token" \
+        -d "grant_type=authorization_code" \
+        -d "code=${code}" \
+        -d "client_id=${CLIENT_ID}" \
+        -d "client_secret=${CLIENT_SECRET}" \
+        -d "redirect_uri=${REDIRECT_URI}")
+
+    local at rt exp
+    at=$(echo "$resp" | python3 -c "import sys,json; print(json.load(sys.stdin)['access_token'])")
+    rt=$(echo "$resp" | python3 -c "import sys,json; print(json.load(sys.stdin)['refresh_token'])")
+    exp=$(echo "$resp" | python3 -c "import sys,json; print(json.load(sys.stdin).get('expires_in',86400))")
+    save_tokens "$at" "$rt" "$exp"
+    echo "Authorized. Tokens saved to $TOKEN_FILE"
+}
+
+cmd_list() {
+    echo "Connected appliances:"
+    api GET "" | python3 -c "
+import sys, json
+data = json.load(sys.stdin)
+for a in data.get('data', {}).get('homeappliances', []):
+    status = 'connected' if a.get('connected') else 'offline'
+    print(f\"  {a['haId']}  {a.get('name', a.get('type','?'))}  [{status}]\")
+"
+}
+
+cmd_status() {
+    local ha_id="${1:?Usage: $0 status <haId>}"
+    api GET "/${ha_id}/status" | python3 -c "
+import sys, json
+for s in json.load(sys.stdin).get('data', {}).get('status', []):
+    print(f\"  {s['key'].split('.')[-1]}: {s['value']}\")"
+}
+
+cmd_on() {
+    local ha_id="${1:?Usage: $0 on <haId>}"
+    api PUT "/${ha_id}/settings/BSH.Common.Setting.PowerState" \
+        -d '{"data":{"key":"BSH.Common.Setting.PowerState","value":"BSH.Common.EnumType.PowerState.On","type":"BSH.Common.EnumType.PowerState"}}'
+    echo "ON: ${ha_id}"
+}
+
+cmd_off() {
+    local ha_id="${1:?Usage: $0 off <haId>}"
+    # ACs use Standby, not Off
+    api PUT "/${ha_id}/settings/BSH.Common.Setting.PowerState" \
+        -d '{"data":{"key":"BSH.Common.Setting.PowerState","value":"BSH.Common.EnumType.PowerState.Standby","type":"BSH.Common.EnumType.PowerState"}}'
+    echo "OFF: ${ha_id}"
+}
+
+cmd_on_all() {
+    for ha_id in $(api GET "" | python3 -c "
+import sys, json
+for a in json.load(sys.stdin).get('data',{}).get('homeappliances',[]):
+    if a.get('connected'): print(a['haId'])"); do
+        cmd_on "$ha_id"
+    done
+}
+
+cmd_off_all() {
+    for ha_id in $(api GET "" | python3 -c "
+import sys, json
+for a in json.load(sys.stdin).get('data',{}).get('homeappliances',[]):
+    if a.get('connected'): print(a['haId'])"); do
+        cmd_off "$ha_id"
+    done
+}
+
+get_power_state() {
+    local ha_id="$1"
+    api GET "/${ha_id}/settings/BSH.Common.Setting.PowerState" | python3 -c "
+import sys, json
+print(json.load(sys.stdin)['data']['value'].split('.')[-1])"
+}
+
+cmd_toggle() {
+    local ha_id="${1:?Usage: $0 toggle <haId>}"
+    local state
+    state=$(get_power_state "$ha_id")
+    if [[ "$state" == "On" ]]; then
+        cmd_off "$ha_id"
+    else
+        cmd_on "$ha_id"
+    fi
+}
+
+cmd_toggle_all() {
+    for ha_id in $(api GET "" | python3 -c "
+import sys, json
+for a in json.load(sys.stdin).get('data',{}).get('homeappliances',[]):
+    if a.get('connected'): print(a['haId'])"); do
+        cmd_toggle "$ha_id"
+    done
+}
+
+# --- main ---
+
+case "${1:-}" in
+    authorize)  cmd_authorize ;;
+    list)       cmd_list ;;
+    status)     cmd_status "${2:-}" ;;
+    on)         cmd_on "${2:-}" ;;
+    off)        cmd_off "${2:-}" ;;
+    on-all)     cmd_on_all ;;
+    off-all)    cmd_off_all ;;
+    toggle)     cmd_toggle "${2:-}" ;;
+    toggle-all) cmd_toggle_all ;;
+    *)
+        cat <<USAGE
+Usage: acc <command> [haId]
+
+  authorize    OAuth2 setup (one-time)
+  list         Show connected appliances
+  status ID    Show appliance status
+  on ID        Turn ON
+  off ID       Turn OFF (standby)
+  toggle ID    Toggle ON/OFF
+  on-all       Turn ON all connected
+  off-all      Turn OFF all connected
+  toggle-all   Toggle all connected
+
+Setup:
+  export HC_CLIENT_ID="your_client_id"
+  export HC_CLIENT_SECRET="your_client_secret"
+  ac authorize
+  ac list
+  ac on-all
+USAGE
+    ;;
+esac
+

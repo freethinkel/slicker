@@ -1,0 +1,31 @@
+{
+  "$schema": "https://www.raycast.com/schemas/extension.json",
+  "name": "slicker-theme",
+  "title": "Slicker Theme",
+  "description": "Switch between slicker themes with color preview",
+  "icon": "icon.png",
+  "author": "slicker",
+  "license": "MIT",
+  "commands": [
+    {
+      "name": "switch-theme",
+      "title": "Switch Theme",
+      "description": "Browse and switch between available slicker themes",
+      "mode": "view"
+    }
+  ],
+  "dependencies": {
+    "@raycast/api": "^1.93.0",
+    "@raycast/utils": "^1.19.0"
+  },
+  "devDependencies": {
+    "@raycast/eslint-config": "^1.0.11",
+    "typescript": "^5.4.0",
+    "@types/node": "22.13.4"
+  },
+  "scripts": {
+    "build": "npx ray build",
+    "dev": "npx ray develop",
+    "lint": "npx ray lint"
+  }
+}

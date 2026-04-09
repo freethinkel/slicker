@@ -22,10 +22,10 @@ At the end of the base config, add a silent include of the user override. The me
 
 # gitconfig-like
 [include]
-  path = ~/.slicker-user/<tool>/user.conf
+  path = ~/.config/slicker/user/<tool>/user.conf
 
 # ghostty-like
-config-file = ~/.slicker-user/<tool>/user.conf
+config-file = ~/.config/slicker/user/<tool>/user.conf
 ```
 
 The include must fail silently if the file doesn't exist.

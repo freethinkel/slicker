@@ -4,6 +4,3 @@
 
 # Set to "work" or "home" (or any label you like)
 export MACHINE="home"
-
-# export GIT_AUTHOR_NAME="Your Name"
-# export SLICKER_THEME="dark"

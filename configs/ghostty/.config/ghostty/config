@@ -1,0 +1,41 @@
+# ─── Slicker Ghostty Config ───────────────────────────────────────────
+# Base layer — managed by slicker. Personal overrides go in user/ghostty/user.conf
+
+app-notifications = no-clipboard-copy
+confirm-close-surface = false
+copy-on-select = clipboard
+# Common axes are: `wght` (weight), `slnt` (slant), `ital` (italic), `opsz`
+# (optical size), `wdth` (width), `GRAD` (gradient), etc.
+# font-variation = wght=900
+
+# Shell Integration
+shell-integration = zsh
+shell-integration-features = cursor,sudo,title
+
+
+# Mouse
+mouse-hide-while-typing = true
+mouse-scroll-multiplier = 2
+
+# Theme
+window-theme = system 
+
+cursor-style = bar
+
+macos-titlebar-style = hidden
+
+window-colorspace = display-p3
+window-inherit-working-directory = true 
+window-padding-color = background
+desktop-notifications = true
+clipboard-paste-protection = false
+
+config-file = keybind.ghostty
+
+# ─── Slicker theme override ──────────────────────────────────────────
+
+config-file = ?"~/.config/slicker/theme/ghostty.conf"
+
+# ─── User overrides (font, theme, keybinds) ──────────────────────────
+
+config-file = ?"~/.config/slicker/user/ghostty/user.conf"

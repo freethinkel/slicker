@@ -1,0 +1,55 @@
+# ─── Slicker skhd Config ──────────────────────────────────────────────
+# Base layer — managed by slicker. Personal overrides go in user/skhd/user.skhdrc
+
+# Launch terminal
+ctrl - return : open -na Ghostty
+
+# Toggle fullscreen
+ctrl - f : yabai -m window --toggle zoom-fullscreen
+
+# Reorder windows
+cmd + shift - left  : yabai -m window --swap west; yabai -m window --focus west
+cmd + shift - down  : yabai -m window --swap south; yabai -m window --focus south
+cmd + shift - up    : yabai -m window --swap north; yabai -m window --focus north
+cmd + shift - right : yabai -m window --swap east; yabai -m window --focus east
+
+# Switch workspaces
+cmd - 1 : yabai -m space --focus 1
+cmd - 2 : yabai -m space --focus 2
+cmd - 3 : yabai -m space --focus 3
+cmd - 4 : yabai -m space --focus 4
+cmd - 5 : yabai -m space --focus 5
+ctrl - 1 : yabai -m space --focus 1
+ctrl - 2 : yabai -m space --focus 2
+ctrl - 3 : yabai -m space --focus 3
+ctrl - 4 : yabai -m space --focus 4
+ctrl - 5 : yabai -m space --focus 5
+
+# Move window to workspace and follow focus
+cmd + shift - 1 : yabai -m window --space 1; yabai -m space --focus 1
+cmd + shift - 2 : yabai -m window --space 2; yabai -m space --focus 2
+cmd + shift - 3 : yabai -m window --space 3; yabai -m space --focus 3
+cmd + shift - 4 : yabai -m window --space 4; yabai -m space --focus 4
+cmd + shift - 5 : yabai -m window --space 5; yabai -m space --focus 5
+ctrl + shift - 1 : yabai -m window --space 1; yabai -m space --focus 1
+ctrl + shift - 2 : yabai -m window --space 2; yabai -m space --focus 2
+ctrl + shift - 3 : yabai -m window --space 3; yabai -m space --focus 3
+ctrl + shift - 4 : yabai -m window --space 4; yabai -m space --focus 4
+ctrl + shift - 5 : yabai -m window --space 5; yabai -m space --focus 5
+
+# Toggle focused window floating / tiled
+ctrl - t : yabai -m window --toggle float
+
+# # Toggle split direction
+# ctrl - j : yabai -m window --toggle split
+# cmd - j  : yabai -m window --toggle split
+
+# Resize focused window
+ctrl - 0x18 : yabai -m window --ratio rel:0.05
+ctrl - 0x1B : yabai -m window --ratio rel:-0.05
+
+# Screenshot (interactive, to clipboard)
+ctrl + shift - s : screencapture -i -c -x
+
+# ─── User overrides ──────────────────────────────────────────────────
+.load "~/.config/slicker/user/skhd/user.skhdrc"

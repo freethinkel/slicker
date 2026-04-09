@@ -19,6 +19,8 @@ ${BOLD}Commands:${RESET}
   theme list           List available themes
   theme set <name>     Set active theme (generates from palette)
   theme current        Show current theme
+  wallpaper next       Set next wallpaper from current theme
+  wallpaper set <path> Set wallpaper from file path
   status               Show link status and config info
   help                 Show this help message
 EOF
@@ -28,6 +30,7 @@ case "${1:-}" in
 install) exec "$SLICKER_DIR/scripts/install.sh" "${@:2}" ;;
 update) exec "$SLICKER_DIR/scripts/update.sh" "${@:2}" ;;
 theme) exec "$SLICKER_DIR/scripts/theme.sh" "${@:2}" ;;
+wallpaper) exec "$SLICKER_DIR/scripts/wallpaper.sh" "${@:2}" ;;
 user) exec "$SLICKER_DIR/scripts/user.sh" "${@:2}" ;;
 status) exec "$SLICKER_DIR/scripts/status.sh" "${@:2}" ;;
 help | --help | -h | "") usage ;;

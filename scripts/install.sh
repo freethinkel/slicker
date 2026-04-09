@@ -45,7 +45,7 @@ fi
 # Stow
 info "Stowing configs into \$HOME..."
 cd "$SLICKER_DIR"
-stow -v -t "$HOME" -d configs zsh git ghostty nvim tmux starship 2>&1 | while read -r line; do
+stow -v -t "$HOME" -d configs zsh git ghostty nvim tmux starship skhd yabai btop 2>&1 | while read -r line; do
   echo "  $line"
 done
 ok "Configs stowed."
@@ -62,6 +62,9 @@ if [[ -f "$SLICKER_USER_DIR/Brewfile" ]]; then
   brew bundle --file="$SLICKER_USER_DIR/Brewfile"
   ok "User brew bundle complete."
 fi
+
+# Post-install tasks (sudoers, etc.)
+"$SLICKER_DIR/scripts/post-install.sh"
 
 echo ""
 ok "Slicker install complete!"

@@ -37,7 +37,7 @@ fi
 
 # Re-stow
 info "Re-stowing configs into \$HOME..."
-stow -v -R -t "$HOME" -d configs zsh git ghostty nvim tmux starship 2>&1 | while read -r line; do
+stow -v -R -t "$HOME" -d configs zsh git ghostty nvim tmux starship skhd yabai 2>&1 | while read -r line; do
   echo "  $line"
 done
 ok "Update complete."

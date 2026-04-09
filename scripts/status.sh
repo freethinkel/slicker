@@ -33,7 +33,7 @@ echo ""
 
 # Stow links
 echo -e "${BOLD}Stowed configs:${RESET}"
-for pkg in zsh git ghostty nvim tmux starship; do
+for pkg in zsh git ghostty nvim tmux starship skhd yabai btop; do
   pkg_dir="$SLICKER_DIR/configs/$pkg"
   if [[ -d "$pkg_dir" ]]; then
     echo -n "  $pkg: "
