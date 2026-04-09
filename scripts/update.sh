@@ -5,7 +5,7 @@ source "$(dirname "$0")/common.sh"
 skip_user=false
 for arg in "$@"; do
   case "$arg" in
-    --skip-user) skip_user=true ;;
+  --skip-user) skip_user=true ;;
   esac
 done
 
@@ -37,7 +37,10 @@ fi
 
 # Re-stow
 info "Re-stowing configs into \$HOME..."
-stow -v -R -t "$HOME" -d configs zsh git ghostty nvim tmux starship skhd yabai 2>&1 | while read -r line; do
+configs=(configs/*/)
+configs=("${configs[@]#configs/}")
+configs=("${configs[@]%/}")
+stow -v -R -t "$HOME" -d configs "${configs[@]}" 2>&1 | while read -r line; do
   echo "  $line"
 done
 ok "Update complete."

@@ -12,6 +12,7 @@ targets=(
   "$HOME/.skhdrc"
   "$HOME/.config/yabai"
   "$HOME/.config/btop"
+  "$HOME/.config/sketchybar"
 )
 
 needs_backup=false

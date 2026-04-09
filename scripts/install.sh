@@ -45,7 +45,10 @@ fi
 # Stow
 info "Stowing configs into \$HOME..."
 cd "$SLICKER_DIR"
-stow -v -t "$HOME" -d configs zsh git ghostty nvim tmux starship skhd yabai btop 2>&1 | while read -r line; do
+configs=(configs/*/)
+configs=("${configs[@]#configs/}")
+configs=("${configs[@]%/}")
+stow -v -t "$HOME" -d configs "${configs[@]}" 2>&1 | while read -r line; do
   echo "  $line"
 done
 ok "Configs stowed."

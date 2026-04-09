@@ -1,0 +1,1 @@
+../../../../theme/sketchybar_colors.lua

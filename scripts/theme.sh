@@ -160,10 +160,70 @@ theme_set() {
   # Reload btop if running
   pkill -USR2 btop 2>/dev/null || true
 
+  # Restart sketchybar (launchd auto-restarts it)
+  killall sketchybar 2>/dev/null || true
+
+  # Update JankyBorders active color from theme
+  local accent_strip
+  accent_strip=$(grep '^accent' "$SLICKER_THEME_DIR/colors.toml" 2>/dev/null | sed 's/.*"#\([^"]*\)".*/\1/')
+  if [[ -n "$accent_strip" ]]; then
+    borders active_color=0xff${accent_strip} 2>/dev/null || true
+  fi
+
   # Set wallpaper from theme backgrounds
   if [[ -d "$SLICKER_THEME_DIR/backgrounds" ]]; then
     "$SLICKER_DIR/scripts/wallpaper.sh" next
   fi
+}
+
+theme_install() {
+  local repo="${1:-}"
+  if [[ -z "$repo" ]]; then
+    err "Usage: slicker theme install <git-url> [name]"
+    exit 1
+  fi
+
+  local name="${2:-$(basename "$repo" .git)}"
+  local dest="$SLICKER_USER_DIR/themes/$name"
+
+  if [[ -d "$dest" ]]; then
+    err "Theme '$name' already exists at $dest"
+    exit 1
+  fi
+
+  mkdir -p "$SLICKER_USER_DIR/themes"
+  info "Installing theme ${BOLD}$name${RESET} from $repo..."
+
+  if ! git clone "$repo" "$dest" 2>&1; then
+    err "Failed to clone repository."
+    rm -rf "$dest"
+    exit 1
+  fi
+
+  if [[ ! -f "$dest/colors.toml" ]]; then
+    err "Invalid theme: colors.toml not found in repository root."
+    rm -rf "$dest"
+    exit 1
+  fi
+
+  ok "Theme ${BOLD}$name${RESET} installed. Run 'slicker theme set $name' to activate."
+}
+
+theme_uninstall() {
+  local name="${1:-}"
+  if [[ -z "$name" ]]; then
+    err "Usage: slicker theme uninstall <name>"
+    exit 1
+  fi
+
+  local dest="$SLICKER_USER_DIR/themes/$name"
+  if [[ ! -d "$dest" ]]; then
+    err "User theme '$name' not found."
+    exit 1
+  fi
+
+  rm -rf "$dest"
+  ok "Theme ${BOLD}$name${RESET} uninstalled."
 }
 
 theme_current() {
@@ -178,9 +238,11 @@ case "${1:-}" in
 list | ls) theme_list ;;
 set) theme_set "${2:-}" ;;
 current) theme_current ;;
+install) theme_install "${2:-}" "${3:-}" ;;
+uninstall | remove) theme_uninstall "${2:-}" ;;
 *)
   err "Unknown theme subcommand: ${1:-}"
-  echo "Usage: slicker theme {list | set <name> | current}"
+  echo "Usage: slicker theme {list | set <name> | current | install <git-url> [name] | uninstall <name>}"
   exit 1
   ;;
 esac

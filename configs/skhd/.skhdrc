@@ -4,6 +4,9 @@
 # Launch terminal
 ctrl - return : open -na Ghostty
 
+# Change wallpaper
+cmd + alt - space : ~/.config/slicker/bin/slicker wallpaper next
+
 # Toggle fullscreen
 ctrl - f : yabai -m window --toggle zoom-fullscreen
 

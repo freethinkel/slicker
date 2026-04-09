@@ -1,0 +1,6 @@
+-- Slicker sketchybar user overrides
+-- Loaded after all base items via dofile()
+-- You have access to the global `sbar` object and all base modules
+--
+-- Example: override bar color
+-- sbar.bar({ color = 0xff1a1b26 })

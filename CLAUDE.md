@@ -48,8 +48,9 @@ Wrappers: `install.sh` → `bin/slicker install`, `update.sh` → `bin/slicker u
 1. Create `configs/<tool>/` with files mirroring target layout relative to `$HOME`
 2. End base config with a silent include of `~/.config/slicker/user/<tool>/user.conf` (or equivalent)
 3. Create `user.example/<tool>/user.conf` as template
-4. Add `<tool>` to the `stow` command in `stow_configs()` and the `for pkg in ...` loop in `cmd_status()` in `bin/slicker`
-5. Add row to the two-layer table in README.md
+4. Add row to the two-layer table in README.md
+
+> Stow автоматически подхватывает все папки в `configs/` — вручную добавлять в скрипты не нужно.
 
 ## Key Conventions
 

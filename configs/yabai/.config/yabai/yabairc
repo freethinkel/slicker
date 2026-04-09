@@ -11,6 +11,10 @@ yabai -m config layout bsp
 yabai -m config window_placement second_child
 yabai -m config auto_balance on
 
+# Statusbar
+yabai -m config external_bar main:40:0
+yabai -m config external_bar all:30:20
+
 # Padding and gaps
 yabai -m config top_padding 8
 yabai -m config bottom_padding 8
@@ -24,8 +28,18 @@ yabai -m config mouse_action1 move
 yabai -m config mouse_action2 resize
 yabai -m config mouse_drop_action stack
 
-# Active window border (via JankyBorders)
-borders active_color=0xffe1e1e1 inactive_color=0x00000000 width=6.0 &
+# Active window border (via JankyBorders) — accent color from theme
+_slicker_accent="e1e1e1"
+_slicker_colors="$HOME/.config/slicker/theme/colors.toml"
+if [[ -f "$_slicker_colors" ]]; then
+  _slicker_accent=$(grep '^accent' "$_slicker_colors" | sed 's/.*"#\([^"]*\)".*/\1/')
+fi
+borders active_color=0xff${_slicker_accent} inactive_color=0x00000000 width=6.0 &
+
+# Sketchybar integration
+yabai -m signal --add event=space_changed action="sketchybar --trigger space_change INFO=\$YABAI_SPACE_INDEX"
+yabai -m signal --add event=window_created action="sketchybar --trigger windows_on_spaces"
+yabai -m signal --add event=window_destroyed action="sketchybar --trigger windows_on_spaces"
 
 # Float system apps that don't tile well
 yabai -m rule --add app="^System Settings$" manage=off

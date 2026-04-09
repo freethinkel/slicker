@@ -1,0 +1,8 @@
+-- Slicker sketchybar user items
+-- Loaded between left (apple, spaces) and right (calendar, volume, ...) base items.
+--
+-- Left items (default position) appear after spaces:
+--   sbar.add("item", { icon = { string = "..." } })
+--
+-- Right items appear before base right items:
+--   sbar.add("item", { position = "right", icon = { string = "..." } })
