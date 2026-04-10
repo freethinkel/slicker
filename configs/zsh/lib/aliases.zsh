@@ -19,3 +19,6 @@ alias gp='git pull --rebase'
 
 alias vim="nvim"
 alias cls="clear"
+
+alias :q="exit"
+alias :qa="exit"

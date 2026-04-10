@@ -1,0 +1,7 @@
+# ─── Slicker Base ZSH Plugins ─────────────────────────────────────────
+# Managed by slicker. Personal plugins go in user/zsh/plugins.txt
+# Format: one plugin per line, <user>/<repo> (see antidote docs)
+
+zsh-users/zsh-completions
+zsh-users/zsh-syntax-highlighting
+zsh-users/zsh-autosuggestions

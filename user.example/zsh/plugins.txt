@@ -1,0 +1,8 @@
+# ─── User ZSH Plugins ────────────────────────────────────────────────
+# Personal plugins loaded after the base list. Managed by antidote.
+# Format: one plugin per line, <user>/<repo>
+#
+# Examples:
+# zdharma-continuum/fast-syntax-highlighting
+# Aloxaf/fzf-tab
+# MichaelAquilina/zsh-you-should-use

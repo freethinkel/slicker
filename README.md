@@ -70,6 +70,7 @@ Each config type uses its tool's native include mechanism:
 | Config   | Base file                        | How it loads user overrides         |
 |----------|----------------------------------|-------------------------------------|
 | zsh      | `configs/zsh/.zshrc`             | `source user/zsh/user.zsh`          |
+| zsh plugins | `configs/zsh/plugins.txt`     | `cat … user/zsh/plugins.txt` → `antidote load` |
 | git      | `configs/git/.gitconfig`         | `[include] path = ...user.gitconfig`|
 | ghostty  | `configs/ghostty/config`         | `config-file = ...user.conf`        |
 | neovim   | `configs/nvim/.config/nvim` → `user/nvim/` | Entirely in user/ (stow symlinks through) |

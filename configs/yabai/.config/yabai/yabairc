@@ -13,7 +13,7 @@ yabai -m config auto_balance on
 
 # Statusbar
 yabai -m config external_bar main:40:0
-yabai -m config external_bar all:30:20
+yabai -m config external_bar all:30:0
 
 # Padding and gaps
 yabai -m config top_padding 8

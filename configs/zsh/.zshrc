@@ -32,6 +32,34 @@ for f in "$SLICKER_ROOT/configs/zsh/lib/"*.zsh(N); do
     source "$f"
 done
 
+# ─── Plugin manager (antidote) ───────────────────────────────────────
+
+for _antidote in \
+    "${HOMEBREW_PREFIX:-/opt/homebrew}/opt/antidote/share/antidote/antidote.zsh" \
+    "/usr/local/opt/antidote/share/antidote/antidote.zsh"; do
+    if [[ -f $_antidote ]]; then
+        source "$_antidote"
+        break
+    fi
+done
+unset _antidote
+
+if (( $+functions[antidote] )); then
+    _slicker_plugins_cache="${XDG_CACHE_HOME:-$HOME/.cache}/slicker/zsh_plugins.txt"
+    _slicker_plugins_base="$SLICKER_ROOT/configs/zsh/plugins.txt"
+    _slicker_plugins_user="$SLICKER_ROOT/user/zsh/plugins.txt"
+
+    if [[ ! -f $_slicker_plugins_cache \
+          || $_slicker_plugins_base -nt $_slicker_plugins_cache \
+          || ( -f $_slicker_plugins_user && $_slicker_plugins_user -nt $_slicker_plugins_cache ) ]]; then
+        mkdir -p "${_slicker_plugins_cache:h}"
+        cat "$_slicker_plugins_base" "$_slicker_plugins_user"(N) > "$_slicker_plugins_cache"
+    fi
+
+    antidote load "$_slicker_plugins_cache"
+    unset _slicker_plugins_cache _slicker_plugins_base _slicker_plugins_user
+fi
+
 # ─── Machine-specific base config ────────────────────────────────────
 
 case "${MACHINE:-}" in
@@ -47,6 +75,12 @@ esac
 
 if command -v starship &>/dev/null; then
   eval "$(starship init zsh)"
+fi
+
+# ─── Zoxide (smarter cd) ─────────────────────────────────────────────
+
+if command -v zoxide &>/dev/null; then
+  eval "$(zoxide init zsh)"
 fi
 
 # ─── User overrides (loaded last, always wins) ───────────────────────

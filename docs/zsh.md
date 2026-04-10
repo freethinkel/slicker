@@ -9,9 +9,11 @@ Shell configuration is the central part of Slicker.
 3. **History** — 50k lines, dedupe, shared across sessions
 4. **meta.sh** — `user/meta.sh` is loaded early to set `MACHINE` and other env vars
 5. **Lib** — all `*.zsh` files from `configs/zsh/lib/` (aliases, functions)
-6. **Machine-specific** — `case $MACHINE` for conditional configuration
-7. **Starship** — `eval "$(starship init zsh)"` if starship is installed
-8. **User overrides** — `user/zsh/user.zsh` is loaded last
+6. **Plugins** — antidote loads `configs/zsh/plugins.txt` + `user/zsh/plugins.txt`
+7. **Machine-specific** — `case $MACHINE` for conditional configuration
+8. **Starship** — `eval "$(starship init zsh)"` if starship is installed
+9. **Zoxide** — `eval "$(zoxide init zsh)"` if zoxide is installed (provides `z`, `zi`)
+10. **User overrides** — `user/zsh/user.zsh` is loaded last
 
 ## Lib Files
 
@@ -25,6 +27,23 @@ Shell configuration is the central part of Slicker.
 
 - `mkcd <dir>` — create a directory and cd into it
 - `ff <name>` — find a file by name
+
+## Plugins
+
+Managed by [antidote](https://getantidote.github.io/). Two-layer:
+
+- **Base list**: `configs/zsh/plugins.txt` — curated defaults (autosuggestions, completions)
+- **User list**: `user/zsh/plugins.txt` — your personal additions
+
+Both files are concatenated into a cache at `~/.cache/slicker/zsh_plugins.txt` and fed to `antidote load`. The cache is regenerated only when either source file's mtime changes.
+
+Format: one plugin per line as `<user>/<repo>`. See [antidote syntax](https://getantidote.github.io/syntax) for annotations like `kind:path` or `branch:…`.
+
+```txt
+# user/zsh/plugins.txt
+zdharma-continuum/fast-syntax-highlighting
+Aloxaf/fzf-tab
+```
 
 ## User Overrides
 
