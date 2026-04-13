@@ -18,6 +18,7 @@ brew "lazygit"
 brew "starship"
 brew "antidote"
 brew "jq"
+brew "media-control"
 brew "curl"
 brew "wget"
 
