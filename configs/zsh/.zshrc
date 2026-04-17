@@ -28,7 +28,7 @@ setopt SHARE_HISTORY
 
 # ─── Slicker lib ──────────────────────────────────────────────────────
 
-for f in "$SLICKER_ROOT/configs/zsh/lib/"*.zsh(N); do
+for f in "$HOME/.config/zsh/lib/"*.zsh(N); do
     source "$f"
 done
 

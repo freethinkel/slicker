@@ -10,7 +10,6 @@ require("items.volume")
 require("items.battery")
 require("items.keyboard")
 require("items.caffeinate")
-require("items.tunnelblick")
 
 local user_items = os.getenv("HOME") .. "/.config/slicker/user/sketchybar/items.lua"
 local f = io.open(user_items, "r")

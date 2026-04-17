@@ -104,9 +104,36 @@ theme_list() {
 theme_set() {
   local name="${1:-}"
   if [[ -z "$name" ]]; then
-    err "Usage: slicker theme set <name>"
-    echo "Run 'slicker theme list' to see available themes."
-    exit 1
+    if ! command -v fzf &>/dev/null; then
+      err "Usage: slicker theme set <name>"
+      echo "Run 'slicker theme list' to see available themes."
+      exit 1
+    fi
+
+    local themes=()
+    for dir in "$SLICKER_DIR"/themes/*/; do
+      [[ -d "$dir" ]] || continue
+      local t
+      t="$(basename "$dir")"
+      [[ "$t" != "templates" ]] && themes+=("$t")
+    done
+    if [[ -d "$SLICKER_USER_DIR/themes" ]]; then
+      for dir in "$SLICKER_USER_DIR"/themes/*/; do
+        [[ -d "$dir" ]] || continue
+        local t
+        t="$(basename "$dir")"
+        [[ "$t" != "templates" ]] && themes+=("$t (user)")
+      done
+    fi
+
+    if [[ ${#themes[@]} -eq 0 ]]; then
+      err "No themes found."
+      exit 1
+    fi
+
+    name=$(printf '%s\n' "${themes[@]}" | fzf --prompt="Select theme: " --height=~20) || exit 0
+    # Strip " (user)" suffix if present
+    name="${name% (user)}"
   fi
 
   local theme_dir
@@ -164,10 +191,39 @@ theme_set() {
   killall sketchybar 2>/dev/null || true
 
   # Update JankyBorders active color from theme
-  local accent_strip
-  accent_strip=$(grep '^accent' "$SLICKER_THEME_DIR/colors.toml" 2>/dev/null | sed 's/.*"#\([^"]*\)".*/\1/')
-  if [[ -n "$accent_strip" ]]; then
-    borders active_color=0xff${accent_strip} 2>/dev/null || true
+  # Active window border (via JankyBorders) — accent color from theme
+  _slicker_accent="e1e1e1"
+  _slicker_colors="$HOME/.config/slicker/theme/colors.toml"
+  if [[ -f "$_slicker_colors" ]]; then
+    _slicker_accent=$(grep '^accent' "$_slicker_colors" | sed 's/.*"#\([^"]*\)".*/\1/')
+  fi
+  borders active_color=0xff${_slicker_accent} inactive_color=0x50${_slicker_accent} width=6.0 &
+
+  # Apply browser theme via macOS managed policies (BrowserThemeColor)
+  local bg_color
+  bg_color=$(grep '^background' "$SLICKER_THEME_DIR/colors.toml" 2>/dev/null | sed 's/.*"\(#[^"]*\)".*/\1/')
+  if [[ -n "$bg_color" ]]; then
+    local color_scheme="dark"
+    [[ -f "$SLICKER_THEME_DIR/light.mode" ]] && color_scheme="light"
+
+    local browsers=(
+      "com.google.Chrome|Google Chrome"
+      "com.brave.Browser|Brave Browser"
+      "org.chromium.Chromium|Chromium"
+      "com.microsoft.Edge|Microsoft Edge"
+    )
+    local applied=false
+    for entry in "${browsers[@]}"; do
+      local bundle_id="${entry%%|*}"
+      local browser_name="${entry#*|}"
+      if mdfind "kMDItemCFBundleIdentifier == '$bundle_id'" 2>/dev/null | grep -q .; then
+        defaults write "$bundle_id" BrowserThemeColor -string "$bg_color"
+        defaults write "$bundle_id" BrowserColorScheme -string "$color_scheme"
+        applied=true
+        ok "Browser theme applied to ${browser_name}."
+      fi
+    done
+    $applied || info "No supported Chromium browsers found, skipping browser theme."
   fi
 
   # Set wallpaper from theme backgrounds

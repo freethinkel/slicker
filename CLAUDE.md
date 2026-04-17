@@ -20,7 +20,7 @@ Opinionated macOS dotfiles framework with a two-layer config system. Base config
 | git     | `[include] path = ...user.gitconfig`       | `~/.config/slicker/user/git/user.gitconfig`  |
 | ghostty | `config-file = ...user/ghostty/user.conf`  | `~/.config/slicker/user/ghostty/user.conf`   |
 | nvim    | `configs/nvim/.config/nvim` → symlink to `user/nvim/` | `~/.config/slicker/user/nvim/`    |
-| starship| `STARSHIP_CONFIG` env var in user.zsh      | `~/.config/slicker/user/starship/starship.toml` |
+| starship| `STARSHIP_CONFIG` env var in user/meta.sh   | `~/.config/slicker/user/zsh/starship.toml`       |
 | tmux    | `source-file -q ...user/tmux/user.conf`    | `~/.config/slicker/user/tmux/user.conf`      |
 | skhd    | `.load "~/.config/slicker/user/skhd/user.skhdrc"` | `~/.config/slicker/user/skhd/user.skhdrc` |
 | yabai   | `source ~/.config/slicker/user/yabai/user.yabairc` | `~/.config/slicker/user/yabai/user.yabairc` |

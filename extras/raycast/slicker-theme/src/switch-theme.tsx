@@ -1,4 +1,4 @@
-import { List, ActionPanel, Action, Icon, showToast, Toast, Color, showHUD } from "@raycast/api";
+import { List, Grid, ActionPanel, Action, Icon, showToast, Toast, Color, showHUD, useNavigation } from "@raycast/api";
 import { exec, type ChildProcess } from "child_process";
 import fs from "fs";
 import path from "path";
@@ -55,11 +55,85 @@ function getCurrentTheme(): string {
   }
 }
 
-function getFirstWallpaper(themeDir: string): string | undefined {
+function getWallpapers(themeDir: string): string[] {
   const bgDir = path.join(themeDir, "backgrounds");
-  if (!fs.existsSync(bgDir)) return undefined;
-  const files = fs.readdirSync(bgDir).filter((f) => /\.(png|jpe?g|webp)$/i.test(f)).sort();
-  return files.length > 0 ? path.join(bgDir, files[0]) : undefined;
+  if (!fs.existsSync(bgDir)) return [];
+  return fs
+    .readdirSync(bgDir)
+    .filter((f) => /\.(png|jpe?g|webp)$/i.test(f))
+    .sort()
+    .map((f) => path.join(bgDir, f));
+}
+
+function getFirstWallpaper(themeDir: string): string | undefined {
+  const wallpapers = getWallpapers(themeDir);
+  return wallpapers[0];
+}
+
+function resolveThemeDir(themeName: string): string | undefined {
+  const userDir = path.join(USER_THEMES_DIR, themeName);
+  if (fs.existsSync(userDir)) return userDir;
+  const baseDir = path.join(THEMES_DIR, themeName);
+  if (fs.existsSync(baseDir)) return baseDir;
+  return undefined;
+}
+
+function WallpaperGrid({ theme }: { theme: ThemeEntry }) {
+  const { pop } = useNavigation();
+  const themeDir = useMemo(() => resolveThemeDir(theme.name), [theme.name]);
+  const wallpapers = useMemo(() => (themeDir ? getWallpapers(themeDir) : []), [themeDir]);
+
+  async function applyWallpaper(imgPath: string) {
+    const toast = await showToast({
+      style: Toast.Style.Animated,
+      title: `Setting wallpaper...`,
+    });
+    try {
+      await new Promise<void>((resolve, reject) => {
+        exec(
+          `/bin/bash -l -c '"${SLICKER_BIN}" wallpaper set "${imgPath}"'`,
+          { timeout: 15000 },
+          (err) => (err ? reject(err) : resolve()),
+        );
+      });
+      await toast.hide();
+      await showHUD(`Wallpaper: ${path.basename(imgPath)}`);
+      pop();
+    } catch (e) {
+      toast.style = Toast.Style.Failure;
+      toast.title = "Failed";
+      toast.message = String(e);
+    }
+  }
+
+  return (
+    <Grid
+      columns={4}
+      aspectRatio="16/9"
+      fit={Grid.Fit.Fill}
+      navigationTitle={`${theme.displayName} · Wallpapers`}
+      searchBarPlaceholder="Search wallpapers..."
+    >
+      {wallpapers.map((wp) => (
+        <Grid.Item
+          key={wp}
+          content={{ source: wp }}
+          title={path.basename(wp)}
+          actions={
+            <ActionPanel>
+              <Action
+                title="Set as Wallpaper"
+                icon={Icon.Image}
+                onAction={() => applyWallpaper(wp)}
+              />
+              <Action.ShowInFinder path={wp} />
+              <Action.CopyToClipboard title="Copy Path" content={wp} />
+            </ActionPanel>
+          }
+        />
+      ))}
+    </Grid>
+  );
 }
 
 function getThemes(): ThemeEntry[] {
@@ -107,21 +181,13 @@ function getThemePreview(theme: ThemeEntry): string {
     ? `![${theme.displayName}](${encodeURI(`file://${theme.wallpaperPath}`)})`
     : "_No wallpaper preview_";
 
-  return [`# ${theme.displayName}`, "", wallpaperPreview, "", `Accent \`${theme.colors?.accent || "—"}\``, `Text \`${theme.colors?.foreground || "—"}\``].join("\n");
+  return `
+${wallpaperPreview}
+
+# ${theme.displayName} 
+`;
 }
 
-function getLsPreviewColors(theme: ThemeEntry) {
-  const c = theme.colors;
-  if (!c) return null;
-  return {
-    directory: c.color4 || c.accent,
-    symlink: c.color6 || c.accent,
-    executable: c.color2 || c.accent,
-    archive: c.color1 || c.accent,
-    device: c.color3 || c.accent,
-    normal: c.foreground,
-  };
-}
 
 export default function Command() {
   const [current, setCurrent] = useState(getCurrentTheme);
@@ -152,7 +218,7 @@ export default function Command() {
       activeChildRef.current = null;
     }
     if (activeToastRef.current) {
-      await activeToastRef.current.hide().catch(() => {});
+      await activeToastRef.current.hide().catch(() => { });
       activeToastRef.current = null;
     }
 
@@ -210,7 +276,7 @@ export default function Command() {
       isShowingDetail
       searchBarPlaceholder="Search themes..."
     >
-      {themes.map((theme) => {
+      {themes.slice().sort((a, b) => a.isUser && !b.isUser ? -1 : !a.isUser && b.isUser ? 1 : 0).map((theme) => {
         const isCurrent = theme.name === (pendingTheme || current);
         const accessories: List.Item.Accessory[] = [];
         if (isCurrent) accessories.push({ tag: { value: "active", color: Color.Green } });
@@ -222,7 +288,6 @@ export default function Command() {
         });
         if (theme.bgCount > 0) accessories.push({ text: `${theme.bgCount} bg` });
 
-        const lsColors = getLsPreviewColors(theme);
 
         return (
           <List.Item
@@ -230,7 +295,7 @@ export default function Command() {
             id={theme.name}
             title={theme.displayName}
             subtitle={theme.isUser ? "user" : undefined}
-            icon={{ source: Icon.Circle, tintColor: theme.colors?.accent as Color }}
+            icon={{ source: Icon.CircleFilled, tintColor: theme.colors?.accent as Color }}
             accessories={accessories}
             detail={
               <List.Item.Detail
@@ -241,16 +306,12 @@ export default function Command() {
                     <List.Item.Detail.Metadata.Separator />
                     <List.Item.Detail.Metadata.Label title="Wallpapers" text={String(theme.bgCount)} />
                     <List.Item.Detail.Metadata.Separator />
-                    {lsColors && (
-                      <List.Item.Detail.Metadata.TagList title="ls -la">
-                        <List.Item.Detail.Metadata.TagList.Item text="dir/" color={lsColors.directory} />
-                        <List.Item.Detail.Metadata.TagList.Item text="link@" color={lsColors.symlink} />
-                        <List.Item.Detail.Metadata.TagList.Item text="exec*" color={lsColors.executable} />
-                        <List.Item.Detail.Metadata.TagList.Item text="archive" color={lsColors.archive} />
-                        <List.Item.Detail.Metadata.TagList.Item text="device" color={lsColors.device} />
-                        <List.Item.Detail.Metadata.TagList.Item text="file" color={lsColors.normal} />
-                      </List.Item.Detail.Metadata.TagList>
-                    )}
+                    <List.Item.Detail.Metadata.TagList title="Colors">
+                      <List.Item.Detail.Metadata.TagList.Item color={theme.colors?.color1} icon={Icon.CircleFilled} />
+                      <List.Item.Detail.Metadata.TagList.Item color={theme.colors?.color2} icon={Icon.CircleFilled} />
+                      <List.Item.Detail.Metadata.TagList.Item color={theme.colors?.color3} icon={Icon.CircleFilled} />
+                      <List.Item.Detail.Metadata.TagList.Item color={theme.colors?.color4} icon={Icon.CircleFilled} />
+                    </List.Item.Detail.Metadata.TagList>
                   </List.Item.Detail.Metadata>
                 }
               />
@@ -260,9 +321,16 @@ export default function Command() {
                 <Action
                   title="Apply Theme"
                   icon={Icon.Brush}
-                  shortcut={{ modifiers: [], key: "return" }}
                   onAction={() => switchTheme(theme)}
                 />
+                {theme.bgCount > 0 && (
+                  <Action.Push
+                    title="Show Wallpapers"
+                    icon={Icon.Image}
+                    shortcut={{ modifiers: ["cmd"], key: "w" }}
+                    target={<WallpaperGrid theme={theme} />}
+                  />
+                )}
               </ActionPanel>
             }
           />

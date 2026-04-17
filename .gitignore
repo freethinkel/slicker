@@ -1,5 +1,6 @@
 # User config (copied from user.example/ on first install)
 user/
+user
 
 # Backups of existing configs created during install
 backups/

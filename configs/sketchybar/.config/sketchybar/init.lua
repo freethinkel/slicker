@@ -1,18 +1,19 @@
 require("bar")
 require("default")
-require("items")
 
 -- Add user config directory to require search path
 local user_dir = os.getenv("HOME") .. "/.config/slicker/user/sketchybar"
 package.path = package.path .. ";" .. user_dir .. "/?.lua"
 
--- User overrides (silent fail if not present)
+-- User overrides (before items so defaults apply)
 local user_config = user_dir .. "/user.lua"
 local f = io.open(user_config, "r")
 if f then
 	f:close()
 	dofile(user_config)
 end
+
+require("items")
 
 function inspect(t, indent)
 	indent = indent or 0

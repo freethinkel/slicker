@@ -2,7 +2,11 @@
 
 # ─── Better Alternatives to default cli tool ───
 
-alias ls="eza"
+if command -v eza &> /dev/null; then
+  alias ls='eza -lh --group-directories-first --icons=auto'
+  alias lt='eza --tree --level=2 --long --icons --git'
+  alias lta='lt -a'
+fi
 alias cat="bat"
 
 alias ll='ls -lAh'
@@ -10,15 +14,23 @@ alias l="ll"
 alias la='ls -A'
 alias ..='cd ..'
 alias ...='cd ../..'
+alias ....='cd ../../..'
 
 # Git shortcuts
 alias gs='git status'
 alias gd='git diff'
 alias gl='git log --oneline -20'
 alias gp='git pull --rebase'
+alias g='git'
+alias gcm='git commit -m'
+alias gcam='git commit -a -m'
+alias gcad='git commit -a --amend'
 
 alias vim="nvim"
 alias cls="clear"
 
 alias :q="exit"
 alias :qa="exit"
+
+alias t='tmux attach || tmux new -s Work'
+alias cx='printf "\033[2J\033[3J\033[H" && claude --allow-dangerously-skip-permissions'

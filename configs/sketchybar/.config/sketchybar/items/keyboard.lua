@@ -1,3 +1,5 @@
+sbar.add("event", "input_change", "AppleSelectedInputSourcesChangedNotification")
+
 local keyboard = sbar.add("item", {
 	icon = {
 		string = "􀂕",
@@ -6,8 +8,6 @@ local keyboard = sbar.add("item", {
 		},
 	},
 	position = "right",
-	-- y_offset = 2,
-	update_freq = 2,
 })
 
 local update = function()
@@ -30,5 +30,5 @@ local update = function()
 	)
 end
 
-keyboard:subscribe("routine", update)
--- keyboard:subscribe("forced", update)
+keyboard:subscribe("input_change", update)
+keyboard:subscribe("forced", update)
