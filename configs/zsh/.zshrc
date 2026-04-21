@@ -10,6 +10,9 @@ SLICKER_ROOT="$(cd "$SLICKER_DIR/../.." 2>/dev/null && pwd)"
 export EDITOR="${EDITOR:-nvim}"
 export LANG="${LANG:-en_US.UTF-8}"
 
+# Force emacs keymap (otherwise EDITOR=nvim silently selects viins and breaks alt+backspace)
+bindkey -e
+
 # Add slicker bin + user bin to PATH
 export PATH="$SLICKER_ROOT/bin:$PATH"
 [[ -d "$SLICKER_ROOT/user/bin" ]] && export PATH="$SLICKER_ROOT/user/bin:$PATH"

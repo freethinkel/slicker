@@ -65,6 +65,50 @@ generate_templates() {
   rm "$sed_script"
 }
 
+# Sync generated obsidian.css to every Obsidian vault as an "Omarchy" theme
+sync_obsidian() {
+  local css="$SLICKER_THEME_DIR/obsidian.css"
+  [[ -f "$css" ]] || return 0
+  command -v jq >/dev/null 2>&1 || return 0
+
+  local obsidian_json=""
+  for candidate in \
+    "$HOME/Library/Application Support/obsidian/obsidian.json" \
+    "$HOME/.config/obsidian/obsidian.json"; do
+    if [[ -f "$candidate" ]]; then
+      obsidian_json="$candidate"
+      break
+    fi
+  done
+  [[ -n "$obsidian_json" ]] || return 0
+
+  local synced=0
+  while IFS= read -r vault_path; do
+    [[ -n "$vault_path" && -d "$vault_path/.obsidian" ]] || continue
+
+    local theme_dir="$vault_path/.obsidian/themes/Omarchy"
+    mkdir -p "$theme_dir"
+
+    if [[ ! -f "$theme_dir/manifest.json" ]]; then
+      cat >"$theme_dir/manifest.json" <<'EOF'
+{
+  "name": "Omarchy",
+  "version": "1.0.0",
+  "minAppVersion": "0.16.0",
+  "description": "Automatically syncs with your current Slicker theme colors.",
+  "author": "Slicker",
+  "authorUrl": "https://github.com/freethinkel/slicker"
+}
+EOF
+    fi
+
+    cp "$css" "$theme_dir/theme.css"
+    synced=$((synced + 1))
+  done < <(jq -r '.vaults | values[].path' "$obsidian_json" 2>/dev/null)
+
+  ((synced > 0)) && ok "Obsidian theme synced to $synced vault(s)."
+}
+
 theme_list() {
   echo -e "${BOLD}Available themes:${RESET}"
   echo ""
@@ -230,6 +274,9 @@ theme_set() {
   if [[ -d "$SLICKER_THEME_DIR/backgrounds" ]]; then
     "$SLICKER_DIR/scripts/wallpaper.sh" next
   fi
+
+  # Sync generated obsidian.css to all Obsidian vaults
+  sync_obsidian
 }
 
 theme_install() {

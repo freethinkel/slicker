@@ -13,6 +13,8 @@ local media = sbar.add("item", {
 })
 
 local app_name = ""
+local last_title = ""
+local last_artist = ""
 
 local function update_media()
 	sbar.exec(
@@ -20,15 +22,30 @@ local function update_media()
 		function(result)
 			result = trim(result)
 			if result == "" or result == "|||false" then
+				last_title = ""
+				last_artist = ""
+				app_name = ""
 				media:set({ drawing = false })
 				return
 			end
 
 			local title, artist, bundle, playing_str = result:match("^(.-)|(.-)|(.-)|(.+)$")
+
+			if bundle and bundle ~= "" then
+				app_name = bundle
+			end
+
 			if title and title ~= "" then
-				app_name = bundle or ""
+				last_title = title
+			end
+			if artist and artist ~= "" then
+				last_artist = artist
+			end
+
+			if last_title ~= "" then
 				local icon = playing_str == "true" and icons.play or icons.pause
-				local label = icon .. " " .. artist .. " – " .. title
+				local label = last_artist ~= "" and (icon .. " " .. last_artist .. " – " .. last_title)
+					or (icon .. " " .. last_title)
 				media:set({
 					drawing = true,
 					label = label,
