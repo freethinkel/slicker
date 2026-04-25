@@ -37,10 +37,23 @@ fi
 
 # Re-stow
 info "Re-stowing configs into \$HOME..."
-configs=(configs/*/)
-configs=("${configs[@]#configs/}")
-configs=("${configs[@]%/}")
-stow -v -R -t "$HOME" -d configs "${configs[@]}" 2>&1 | while read -r line; do
-  echo "  $line"
+
+# See install.sh — same override mechanism.
+stow_override=(glide zellij)
+
+for pkg_dir in "$SLICKER_DIR"/configs/*/; do
+  name="$(basename "$pkg_dir")"
+  src_dir="$SLICKER_DIR/configs"
+  for override in "${stow_override[@]}"; do
+    if [[ "$name" == "$override" && -d "$SLICKER_USER_DIR/$name" ]]; then
+      # Clean up a possibly-stale link from configs/ before switching sources.
+      stow -D -t "$HOME" -d "$SLICKER_DIR/configs" "$name" 2>/dev/null || true
+      src_dir="$SLICKER_USER_DIR"
+      break
+    fi
+  done
+  stow -v -R -t "$HOME" -d "$src_dir" "$name" 2>&1 | while read -r line; do
+    echo "  $line"
+  done
 done
 ok "Update complete."

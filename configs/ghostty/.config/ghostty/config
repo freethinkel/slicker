@@ -46,3 +46,5 @@ config-file = ?"~/.config/slicker/theme/ghostty.conf"
 # ─── User overrides (font, theme, keybinds) ──────────────────────────
 
 config-file = ?"~/.config/slicker/user/ghostty/user.conf"
+
+background-opacity = 1.00

@@ -65,6 +65,22 @@ generate_templates() {
   rm "$sed_script"
 }
 
+# Symlink generated zellij theme into ~/.config/zellij/themes/ so zellij auto-picks it up
+sync_zellij() {
+  local src="$SLICKER_THEME_DIR/zellij.kdl"
+  [[ -f "$src" ]] || return 0
+
+  local dest_dir="$HOME/.config/zellij/themes"
+  mkdir -p "$dest_dir"
+  ln -sfn "$src" "$dest_dir/slicker.kdl"
+
+  # Touch config.kdl to trigger zellij's live config reload — it rereads
+  # the themes directory on each reload, so active sessions pick up the
+  # new palette without a restart.
+  local cfg="$HOME/.config/zellij/config.kdl"
+  [[ -e "$cfg" ]] && touch "$cfg"
+}
+
 # Sync generated obsidian.css to every Obsidian vault as an "Omarchy" theme
 sync_obsidian() {
   local css="$SLICKER_THEME_DIR/obsidian.css"
@@ -231,18 +247,6 @@ theme_set() {
   # Reload btop if running
   pkill -USR2 btop 2>/dev/null || true
 
-  # Restart sketchybar (launchd auto-restarts it)
-  killall sketchybar 2>/dev/null || true
-
-  # Update JankyBorders active color from theme
-  # Active window border (via JankyBorders) — accent color from theme
-  _slicker_accent="e1e1e1"
-  _slicker_colors="$HOME/.config/slicker/theme/colors.toml"
-  if [[ -f "$_slicker_colors" ]]; then
-    _slicker_accent=$(grep '^accent' "$_slicker_colors" | sed 's/.*"#\([^"]*\)".*/\1/')
-  fi
-  borders active_color=0xff${_slicker_accent} inactive_color=0x50${_slicker_accent} width=6.0 &
-
   # Apply browser theme via macOS managed policies (BrowserThemeColor)
   local bg_color
   bg_color=$(grep '^background' "$SLICKER_THEME_DIR/colors.toml" 2>/dev/null | sed 's/.*"\(#[^"]*\)".*/\1/')
@@ -277,6 +281,9 @@ theme_set() {
 
   # Sync generated obsidian.css to all Obsidian vaults
   sync_obsidian
+
+  # Symlink generated zellij theme into ~/.config/zellij/themes/
+  sync_zellij
 }
 
 theme_install() {

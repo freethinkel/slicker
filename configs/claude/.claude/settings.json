@@ -1,0 +1,156 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__pencil"
+    ]
+  },
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/tmux.sh UserPromptSubmit"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/tmux.sh PreToolUse"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/tmux.sh Stop"
+          }
+        ]
+      }
+    ],
+    "Notification": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/tmux.sh Notification"
+          }
+        ]
+      }
+    ]
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "bash ~/.claude/statusline-command.sh"
+  },
+  "enabledPlugins": {
+    "feature-dev@claude-plugins-official": true,
+    "code-review@claude-plugins-official": true,
+    "swift-lsp@claude-plugins-official": true,
+    "rust-analyzer-lsp@claude-plugins-official": true,
+    "clangd-lsp@claude-plugins-official": true,
+    "frontend-design@claude-plugins-official": true
+  },
+  "language": "ru",
+  "spinnerVerbs": {
+    "mode": "replace",
+    "verbs": [
+      "At your service, sir",
+      "Running diagnostics",
+      "Accessing the mainframe",
+      "Calibrating the suit",
+      "Powering up the Arc Reactor",
+      "Scanning all frequencies",
+      "Processing your request",
+      "Right away, sir",
+      "Shall I take that as a yes?",
+      "Deploying countermeasures",
+      "Rendering calculations",
+      "As you wish, sir",
+      "Interfacing with the system",
+      "Booting up the Mark VII",
+      "Analyzing threat assessment",
+      "Initiating clean-up protocol",
+      "Rerouting power to thrusters",
+      "Compiling the data now",
+      "Allow me a moment, sir",
+      "Running a simulation",
+      "Initializing flight systems",
+      "Loading satellite imagery",
+      "Accessing S.H.I.E.L.D. database",
+      "Recalibrating sensors",
+      "Preparing your suit, sir",
+      "Monitoring all channels",
+      "I do enjoy working with you",
+      "Perhaps a different approach",
+      "That would be inadvisable, sir",
+      "Cross-referencing databases",
+      "Uploading to the cloud",
+      "Optimizing repulsor output",
+      "Engaging autopilot",
+      "Checking structural integrity",
+      "Mapping the perimeter",
+      "Patching into the network",
+      "Shall I alert Ms. Potts?",
+      "Triangulating the signal",
+      "Calculating trajectory",
+      "Bringing all systems online",
+      "Verifying biometric scan",
+      "Running thermal analysis",
+      "Welcome home, sir",
+      "Configuring the HUD",
+      "Charging repulsors",
+      "Deploying flaps",
+      "Engaging heads-up display",
+      "I've got something, sir",
+      "One moment, sir",
+      "May I say how refreshing it is",
+      "Spinning up the servers",
+      "Acquiring target lock",
+      "Adjusting altitude",
+      "Launching the House Party Protocol",
+      "Parsing global threat data",
+      "Streaming encrypted channels",
+      "Ready when you are, sir",
+      "Reconfiguring the matrix",
+      "Sir, I have a suggestion",
+      "Plotting optimal course",
+      "Running facial recognition",
+      "Checking Stark Industries servers",
+      "Executing Protocol Veronica",
+      "I'm afraid I must advise caution",
+      "Stabilizing power levels",
+      "Activating sentry mode",
+      "Preparing for re-entry",
+      "Assembling the data, sir"
+    ]
+  },
+  "alwaysThinkingEnabled": true,
+  "effortLevel": "high",
+  "voice": {
+    "enabled": false,
+    "mode": "hold"
+  },
+  "skipDangerousModePermissionPrompt": true,
+  "theme": "light",
+  "voiceEnabled": false,
+  "mcpServers": {
+    "pencil": {
+      "transport": "stdio",
+      "command": "/Applications/Pencil.app/Contents/Resources/app.asar.unpacked/out/mcp-server-darwin-arm64",
+      "args": [
+        "--app",
+        "desktop"
+      ],
+      "env": {}
+    }
+  },
+  "skipAutoPermissionPrompt": true
+}

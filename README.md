@@ -76,6 +76,7 @@ Each config type uses its tool's native include mechanism:
 | neovim   | `configs/nvim/.config/nvim` → `user/nvim/` | Entirely in user/ (stow symlinks through) |
 | starship | `configs/starship/.config/starship.toml` | `STARSHIP_CONFIG` env var in user.zsh |
 | tmux     | `configs/tmux/.config/tmux/`     | `source-file -q ...user.conf`       |
+| claude   | `configs/claude/.claude/` (per-item symlinks) | Entirely in `user/claude/` (skills, commands, agents, hooks, settings.json) |
 
 All includes fail silently if the user file doesn't exist.
 

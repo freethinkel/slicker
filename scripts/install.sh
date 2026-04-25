@@ -45,11 +45,24 @@ fi
 # Stow
 info "Stowing configs into \$HOME..."
 cd "$SLICKER_DIR"
-configs=(configs/*/)
-configs=("${configs[@]#configs/}")
-configs=("${configs[@]%/}")
-stow -v -t "$HOME" -d configs "${configs[@]}" 2>&1 | while read -r line; do
-  echo "  $line"
+
+# Configs that support full replacement from user/ (for tools without a
+# native include mechanism). If user/<name>/ exists, stow it instead of
+# configs/<name>/.
+stow_override=(glide zellij)
+
+for pkg_dir in configs/*/; do
+  name="$(basename "$pkg_dir")"
+  src_dir="configs"
+  for override in "${stow_override[@]}"; do
+    if [[ "$name" == "$override" && -d "$SLICKER_USER_DIR/$name" ]]; then
+      src_dir="$SLICKER_USER_DIR"
+      break
+    fi
+  done
+  stow -v -t "$HOME" -d "$src_dir" "$name" 2>&1 | while read -r line; do
+    echo "  $line"
+  done
 done
 ok "Configs stowed."
 

@@ -22,10 +22,13 @@ Opinionated macOS dotfiles framework with a two-layer config system. Base config
 | nvim    | `configs/nvim/.config/nvim` → symlink to `user/nvim/` | `~/.config/slicker/user/nvim/`    |
 | starship| `STARSHIP_CONFIG` env var in user/meta.sh   | `~/.config/slicker/user/zsh/starship.toml`       |
 | tmux    | `source-file -q ...user/tmux/user.conf`    | `~/.config/slicker/user/tmux/user.conf`      |
-| skhd    | `.load "~/.config/slicker/user/skhd/user.skhdrc"` | `~/.config/slicker/user/skhd/user.skhdrc` |
-| yabai   | `source ~/.config/slicker/user/yabai/user.yabairc` | `~/.config/slicker/user/yabai/user.yabairc` |
+| glide   | full replacement via stow (no native include) | `~/.config/slicker/user/glide/.config/glide/glide.toml` |
+| zellij  | full replacement via stow (no native include) | `~/.config/slicker/user/zellij/.config/zellij/config.kdl` |
+| claude  | per-item symlinks inside `configs/claude/.claude/` → `user/claude/` | `~/.config/slicker/user/claude/{skills,commands,agents,hooks,settings.json}` |
 
 All includes fail silently if user file doesn't exist.
+
+**Full-replacement configs (stow override):** Some tools (currently `glide`, `zellij`) have no native `source`/`include` mechanism. For these, `install.sh`/`update.sh` check `stow_override=(glide zellij)` — if `user/<name>/` exists, stow links from `user/` instead of `configs/`. Add a config to the `stow_override` list in both scripts to opt it into this behavior.
 
 **`user/meta.sh`** is sourced early in `.zshrc` to export `MACHINE` and other env vars used for machine-specific branching in base configs.
 

@@ -9,10 +9,13 @@ targets=(
   "$HOME/.config/tmux"
   "$HOME/.config/ghostty"
   "$HOME/.config/starship.toml"
-  "$HOME/.skhdrc"
-  "$HOME/.config/yabai"
   "$HOME/.config/btop"
-  "$HOME/.config/sketchybar"
+  "$HOME/.config/glide"
+  "$HOME/.claude/skills"
+  "$HOME/.claude/commands"
+  "$HOME/.claude/agents"
+  "$HOME/.claude/hooks"
+  "$HOME/.claude/settings.json"
 )
 
 needs_backup=false

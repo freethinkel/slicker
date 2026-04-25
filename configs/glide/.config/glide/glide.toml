@@ -175,7 +175,7 @@ status_icon.enable = true
 scroll.enable = true
 
 # When to center the focused column: "never", "always", or "on_overflow".
-scroll.center_focused_column = "never"
+scroll.center_focused_column = "always"
 
 # Number of columns visible at once (1-5).
 scroll.visible_columns = 2
@@ -193,7 +193,7 @@ scroll.scroll_sensitivity = 20.0
 scroll.invert_scroll_direction = false
 
 # Allow focus to wrap around from last column to first and vice versa.
-scroll.infinite_loop = false
+scroll.infinite_loop = true
 
 # Aspect ratio for single-column mode (e.g. "16:9"). Empty string disables.
 scroll.single_column_aspect_ratio = ""

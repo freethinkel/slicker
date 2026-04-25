@@ -8,6 +8,7 @@ brew "stow"
 brew "git"
 brew "neovim"
 brew "tmux"
+brew "zellij"
 brew "fzf"
 brew "ripgrep"
 brew "fd"
@@ -26,3 +27,7 @@ brew "wget"
 
 cask "ghostty"
 cask "raycast"
+
+# ─── Window Management ───────────────────────────────────────────────
+
+cask "glide"
