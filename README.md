@@ -84,6 +84,11 @@ Each config type uses its tool's native include mechanism:
 
 All includes fail silently if the user file doesn't exist.
 
+Any dir in `user/` that mirrors `$HOME` layout (only dot-entries at its top
+level, e.g. `user/karabiner/.config/karabiner/`) is stowed automatically —
+it replaces the same-named `configs/` package if one exists, or links as a
+brand-new package if not. No list to register it in.
+
 ## Themes
 
 Themes are generated from palettes. Each palette is a shell file with color variables:

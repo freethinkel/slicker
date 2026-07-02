@@ -34,8 +34,7 @@ echo ""
 # Stow links: every file in the package must resolve to its source
 # (readlink -f handles both direct links and stow-folded dir links).
 echo -e "${BOLD}Stowed configs:${RESET}"
-for pkg_dir in "$SLICKER_DIR"/configs/*/; do
-  pkg="$(basename "$pkg_dir")"
+while IFS= read -r pkg; do
   src="$(pkg_src "$pkg")/$pkg"
   linked=true
   while IFS= read -r -d '' file; do
@@ -44,11 +43,11 @@ for pkg_dir in "$SLICKER_DIR"/configs/*/; do
       linked=false
       break
     fi
-  done < <(find "$src" \( -type f -o -type l \) -print0 2>/dev/null)
+  done < <(find "$src" \( -type f -o -type l \) ! -name '.DS_Store' -print0 2>/dev/null)
   echo -n "  $pkg: "
   if $linked; then
     echo -e "${GREEN}linked${RESET}"
   else
     echo -e "${YELLOW}not linked${RESET}"
   fi
-done
+done < <(stow_pkgs)

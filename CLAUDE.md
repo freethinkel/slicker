@@ -30,7 +30,7 @@ Opinionated macOS dotfiles framework with a two-layer config system. Base config
 
 All includes fail silently if user file doesn't exist.
 
-**Full-replacement configs (stow override):** Some tools (currently `omniwm`, `zellij`, `tmuxinator`, `herdr`) have no native `source`/`include` mechanism. For these, the `STOW_OVERRIDE` list in `scripts/common.sh` (used by `stow_all()`/`pkg_src()`) decides the source: if `user/<name>/` exists, stow links from `user/` instead of `configs/`. Add a config to `STOW_OVERRIDE` to opt it into this behavior.
+**Full-replacement configs (stow override):** Some tools (e.g. `omniwm`, `zellij`, `tmuxinator`, `herdr`) have no native `source`/`include` mechanism. There is no list to maintain: a dir in `user/` is treated as a stow package iff every top-level entry is a dot-entry, i.e. it mirrors `$HOME` layout (`is_stow_pkg` in `scripts/common.sh`). A `$HOME`-shaped `user/<name>/` replaces `configs/<name>/` wholesale; a `$HOME`-shaped `user/<name>/` with no `configs/` counterpart is stowed too — drop in `user/karabiner/.config/karabiner/` and it just links. Include-target dirs (`user/zsh/user.zsh`, `user/git/user.gitconfig`, …) hold plain-named files, so they never match. `stow_pkgs()`/`pkg_src()`/`stow_all()` in `scripts/common.sh` implement this; `.DS_Store` is ignored everywhere.
 
 **`user/meta.sh`** is sourced early in `.zshrc` to export `MACHINE` and other env vars used for machine-specific branching in base configs.
 

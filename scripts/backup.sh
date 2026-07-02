@@ -8,8 +8,7 @@ source "$(dirname "$0")/common.sh"
 backup_dir="$SLICKER_DIR/backups/$(date +%Y%m%d_%H%M%S)"
 moved=0
 
-for pkg_dir in "$SLICKER_DIR"/configs/*/; do
-  pkg="$(basename "$pkg_dir")"
+while IFS= read -r pkg; do
   src="$(pkg_src "$pkg")/$pkg"
   while IFS= read -r -d '' file; do
     rel="${file#$src/}"
@@ -25,8 +24,8 @@ for pkg_dir in "$SLICKER_DIR"/configs/*/; do
       echo "  $rel → ${backup_dir#$SLICKER_DIR/}/$rel"
       moved=1
     fi
-  done < <(find "$src" \( -type f -o -type l \) -print0 2>/dev/null)
-done
+  done < <(find "$src" \( -type f -o -type l \) ! -name '.DS_Store' -print0 2>/dev/null)
+done < <(stow_pkgs)
 
 if [[ "$moved" -eq 0 ]]; then
   ok "Nothing to back up."
