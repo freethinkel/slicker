@@ -89,3 +89,17 @@ fi
 # ─── User overrides (loaded last, always wins) ───────────────────────
 
 [[ -f "$SLICKER_ROOT/user/zsh/user.zsh" ]] && source "$SLICKER_ROOT/user/zsh/user.zsh"
+
+# opencode
+export PATH="$HOME/.opencode/bin:$PATH"
+
+# >>> otty shell integration >>>
+# Added by Otty — toggle in Settings > Shell > Shell Integration.
+# Inert unless launched by Otty (it sets $OTTY_SHELL_INTEGRATION).
+if [ -n "$OTTY_SHELL_INTEGRATION" ] && [ -r "$OTTY_SHELL_INTEGRATION/otty-integration.zsh" ]; then
+  . "$OTTY_SHELL_INTEGRATION/otty-integration.zsh"
+fi
+# <<< otty shell integration <<<
+
+# nub
+export PATH="$HOME/.nub/bin:$PATH"

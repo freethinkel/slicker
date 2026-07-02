@@ -1,0 +1,7 @@
+# herdr user config — full replacement of the base config
+# (herdr has no include mechanism; if user/herdr/ exists it is stowed
+# instead of configs/herdr/). Copy configs/herdr/.config/herdr/config.toml
+# here as a starting point.
+
+# [theme]
+# name = "terminal"

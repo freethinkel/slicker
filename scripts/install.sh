@@ -2,6 +2,14 @@
 set -euo pipefail
 source "$(dirname "$0")/common.sh"
 
+skip_backup=0
+for arg in "$@"; do
+  case "$arg" in
+    --skip-backup) skip_backup=1 ;;
+    *) err "Unknown option: $arg"; exit 1 ;;
+  esac
+done
+
 info "Starting full install..."
 echo ""
 
@@ -40,30 +48,15 @@ if [[ -f "$SLICKER_USER_DIR/meta.sh" ]]; then
 fi
 
 # Backup existing configs
-"$SLICKER_DIR/scripts/backup.sh"
+if [[ "$skip_backup" -eq 1 ]]; then
+  info "Skipping backup (--skip-backup)."
+else
+  "$SLICKER_DIR/scripts/backup.sh"
+fi
 
 # Stow
 info "Stowing configs into \$HOME..."
-cd "$SLICKER_DIR"
-
-# Configs that support full replacement from user/ (for tools without a
-# native include mechanism). If user/<name>/ exists, stow it instead of
-# configs/<name>/.
-stow_override=(glide zellij)
-
-for pkg_dir in configs/*/; do
-  name="$(basename "$pkg_dir")"
-  src_dir="configs"
-  for override in "${stow_override[@]}"; do
-    if [[ "$name" == "$override" && -d "$SLICKER_USER_DIR/$name" ]]; then
-      src_dir="$SLICKER_USER_DIR"
-      break
-    fi
-  done
-  stow -v -t "$HOME" -d "$src_dir" "$name" 2>&1 | while read -r line; do
-    echo "  $line"
-  done
-done
+stow_all
 ok "Configs stowed."
 
 # Brewfiles

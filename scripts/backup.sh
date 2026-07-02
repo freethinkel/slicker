@@ -2,47 +2,34 @@
 set -euo pipefail
 source "$(dirname "$0")/common.sh"
 
-targets=(
-  "$HOME/.zshrc"
-  "$HOME/.gitconfig"
-  "$HOME/.config/nvim"
-  "$HOME/.config/tmux"
-  "$HOME/.config/ghostty"
-  "$HOME/.config/starship.toml"
-  "$HOME/.config/btop"
-  "$HOME/.config/glide"
-  "$HOME/.claude/skills"
-  "$HOME/.claude/commands"
-  "$HOME/.claude/agents"
-  "$HOME/.claude/hooks"
-  "$HOME/.claude/settings.json"
-)
-
-needs_backup=false
-for target in "${targets[@]}"; do
-  if [[ -e "$target" ]] && ! is_slicker_symlink "$target"; then
-    needs_backup=true
-    break
-  fi
-done
-
-if ! $needs_backup; then
-  ok "Nothing to back up."
-  exit 0
-fi
-
+# Back up anything in $HOME that a stow package would overwrite and that
+# doesn't already resolve into the slicker repo. Targets are derived from
+# the packages themselves — no hardcoded list to keep in sync.
 backup_dir="$SLICKER_DIR/backups/$(date +%Y%m%d_%H%M%S)"
-mkdir -p "$backup_dir"
-info "Backing up existing configs to ${backup_dir#$SLICKER_DIR/}/"
+moved=0
 
-for target in "${targets[@]}"; do
-  if [[ -e "$target" ]] && ! is_slicker_symlink "$target"; then
-    rel="${target#$HOME/}"
-    dest="$backup_dir/$rel"
-    mkdir -p "$(dirname "$dest")"
-    mv "$target" "$dest"
-    echo "  $rel → ${backup_dir#$SLICKER_DIR/}/$rel"
-  fi
+for pkg_dir in "$SLICKER_DIR"/configs/*/; do
+  pkg="$(basename "$pkg_dir")"
+  src="$(pkg_src "$pkg")/$pkg"
+  while IFS= read -r -d '' file; do
+    rel="${file#$src/}"
+    target="$HOME/$rel"
+    if [[ -e "$target" ]] && ! is_stowed "$rel" "$file"; then
+      if [[ "$moved" -eq 0 ]]; then
+        info "Backing up existing configs to ${backup_dir#$SLICKER_DIR/}/"
+        mkdir -p "$backup_dir"
+      fi
+      dest="$backup_dir/$rel"
+      mkdir -p "$(dirname "$dest")"
+      mv "$target" "$dest"
+      echo "  $rel → ${backup_dir#$SLICKER_DIR/}/$rel"
+      moved=1
+    fi
+  done < <(find "$src" \( -type f -o -type l \) -print0 2>/dev/null)
 done
 
-ok "Backup complete."
+if [[ "$moved" -eq 0 ]]; then
+  ok "Nothing to back up."
+else
+  ok "Backup complete."
+fi

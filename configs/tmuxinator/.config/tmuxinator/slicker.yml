@@ -1,0 +1,7 @@
+name: slicker
+root: ~/.config/slicker
+
+windows:
+  - editor: nvim
+  - shell: null
+  - git: lazygit

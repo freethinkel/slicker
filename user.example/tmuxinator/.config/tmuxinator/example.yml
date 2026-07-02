@@ -1,0 +1,21 @@
+# ─── Tmuxinator project template ──────────────────────────────────────
+# Copy this file to a new name (e.g. `myproject.yml`) and edit.
+# Start with:  tmuxinator start <name>   (alias: mux <name>)
+# List all:   tmuxinator list
+#
+# Docs: https://github.com/tmuxinator/tmuxinator
+
+name: example
+root: ~/
+
+# Optional: command run before opening windows
+# pre_window: nvm use 18
+
+windows:
+  - editor:
+      layout: main-vertical
+      panes:
+        - nvim
+        - null
+  - server: npm run dev
+  - git: lazygit

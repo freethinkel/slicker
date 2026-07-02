@@ -20,6 +20,8 @@
     ci = commit
     st = status
     lg = log --oneline --graph --decorate -20
+    undo = reset --soft HEAD^
+    uncommit = reset --soft HEAD^
 
 # ─── User overrides (name, email, signing, etc) ──────────────────────
 

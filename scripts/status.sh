@@ -31,25 +31,24 @@ else
 fi
 echo ""
 
-# Stow links
+# Stow links: every file in the package must resolve to its source
+# (readlink -f handles both direct links and stow-folded dir links).
 echo -e "${BOLD}Stowed configs:${RESET}"
-for pkg in "$SLICKER_DIR"/configs/*/; do
-  pkg="$(basename "$pkg")"
-  pkg_dir="$SLICKER_DIR/configs/$pkg"
-  if [[ -d "$pkg_dir" ]]; then
-    echo -n "  $pkg: "
-    linked=false
-    while IFS= read -r -d '' file; do
-      rel="${file#$pkg_dir/}"
-      if [[ -L "$HOME/$rel" ]]; then
-        linked=true
-        break
-      fi
-    done < <(find "$pkg_dir" -type f -print0 2>/dev/null)
-    if $linked; then
-      echo -e "${GREEN}linked${RESET}"
-    else
-      echo -e "${YELLOW}not linked${RESET}"
+for pkg_dir in "$SLICKER_DIR"/configs/*/; do
+  pkg="$(basename "$pkg_dir")"
+  src="$(pkg_src "$pkg")/$pkg"
+  linked=true
+  while IFS= read -r -d '' file; do
+    rel="${file#$src/}"
+    if ! is_stowed "$rel" "$file"; then
+      linked=false
+      break
     fi
+  done < <(find "$src" \( -type f -o -type l \) -print0 2>/dev/null)
+  echo -n "  $pkg: "
+  if $linked; then
+    echo -e "${GREEN}linked${RESET}"
+  else
+    echo -e "${YELLOW}not linked${RESET}"
   fi
 done

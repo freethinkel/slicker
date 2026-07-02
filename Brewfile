@@ -2,12 +2,17 @@
 # Core dependencies for slicker configs.
 # User-specific apps go in user/Brewfile
 
+# ─── Taps ────────────────────────────────────────────────────────────
+
+tap "BarutSRB/tap"
+
 # ─── Core Tools ──────────────────────────────────────────────────────
 
 brew "stow"
 brew "git"
 brew "neovim"
 brew "tmux"
+brew "tmuxinator"
 brew "zellij"
 brew "fzf"
 brew "ripgrep"
@@ -30,4 +35,4 @@ cask "raycast"
 
 # ─── Window Management ───────────────────────────────────────────────
 
-cask "glide"
+brew "omniwm"

@@ -22,13 +22,15 @@ Opinionated macOS dotfiles framework with a two-layer config system. Base config
 | nvim    | `configs/nvim/.config/nvim` → symlink to `user/nvim/` | `~/.config/slicker/user/nvim/`    |
 | starship| `STARSHIP_CONFIG` env var in user/meta.sh   | `~/.config/slicker/user/zsh/starship.toml`       |
 | tmux    | `source-file -q ...user/tmux/user.conf`    | `~/.config/slicker/user/tmux/user.conf`      |
-| glide   | full replacement via stow (no native include) | `~/.config/slicker/user/glide/.config/glide/glide.toml` |
+| omniwm  | full replacement via stow (no native include) | `~/.config/slicker/user/omniwm/.config/omniwm/settings.toml` |
 | zellij  | full replacement via stow (no native include) | `~/.config/slicker/user/zellij/.config/zellij/config.kdl` |
+| tmuxinator | full replacement via stow (no native include) | `~/.config/slicker/user/tmuxinator/.config/tmuxinator/*.yml` |
+| herdr   | full replacement via stow (no native include) | `~/.config/slicker/user/herdr/.config/herdr/config.toml` |
 | claude  | per-item symlinks inside `configs/claude/.claude/` → `user/claude/` | `~/.config/slicker/user/claude/{skills,commands,agents,hooks,settings.json}` |
 
 All includes fail silently if user file doesn't exist.
 
-**Full-replacement configs (stow override):** Some tools (currently `glide`, `zellij`) have no native `source`/`include` mechanism. For these, `install.sh`/`update.sh` check `stow_override=(glide zellij)` — if `user/<name>/` exists, stow links from `user/` instead of `configs/`. Add a config to the `stow_override` list in both scripts to opt it into this behavior.
+**Full-replacement configs (stow override):** Some tools (currently `omniwm`, `zellij`, `tmuxinator`, `herdr`) have no native `source`/`include` mechanism. For these, the `STOW_OVERRIDE` list in `scripts/common.sh` (used by `stow_all()`/`pkg_src()`) decides the source: if `user/<name>/` exists, stow links from `user/` instead of `configs/`. Add a config to `STOW_OVERRIDE` to opt it into this behavior.
 
 **`user/meta.sh`** is sourced early in `.zshrc` to export `MACHINE` and other env vars used for machine-specific branching in base configs.
 

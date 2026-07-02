@@ -55,6 +55,8 @@ On first run, if `user/` doesn't exist, Slicker copies `user.example/` into it.
 slicker install              # Full setup: brew, stow, user config
 slicker update               # Pull + sync new user configs + re-stow
 slicker update --skip-user   # Same but skip user config sync
+                             # (update doesn't run brew bundle — re-run
+                             #  `slicker install` to pick up new Brewfile entries)
 slicker user init [repo-url] # Clone or initialize user config
 slicker user edit            # Open user/ in $EDITOR
 slicker theme list           # List available themes
@@ -76,6 +78,8 @@ Each config type uses its tool's native include mechanism:
 | neovim   | `configs/nvim/.config/nvim` → `user/nvim/` | Entirely in user/ (stow symlinks through) |
 | starship | `configs/starship/.config/starship.toml` | `STARSHIP_CONFIG` env var in user.zsh |
 | tmux     | `configs/tmux/.config/tmux/`     | `source-file -q ...user.conf`       |
+| tmuxinator | `configs/tmuxinator/.config/tmuxinator/` | Full replacement via stow (if `user/tmuxinator/` exists) |
+| herdr    | `configs/herdr/.config/herdr/config.toml` | Full replacement via stow (if `user/herdr/` exists) |
 | claude   | `configs/claude/.claude/` (per-item symlinks) | Entirely in `user/claude/` (skills, commands, agents, hooks, settings.json) |
 
 All includes fail silently if the user file doesn't exist.

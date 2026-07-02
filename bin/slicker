@@ -12,7 +12,7 @@ ${BOLD}Usage:${RESET}
   slicker <command> [options]
 
 ${BOLD}Commands:${RESET}
-  install              Full install (brew, stow, symlinks)
+  install [--skip-backup] Full install (brew, stow, symlinks)
   update [--skip-user]  Pull latest + re-stow + sync new user configs
   user init [repo-url] Clone or initialize user config
   user edit            Open user/ in \$EDITOR
