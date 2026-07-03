@@ -79,7 +79,6 @@ Each config type uses its tool's native include mechanism:
 | starship | `configs/starship/.config/starship.toml` | `STARSHIP_CONFIG` env var in user.zsh |
 | tmux     | `configs/tmux/.config/tmux/`     | `source-file -q ...user.conf`       |
 | tmuxinator | `configs/tmuxinator/.config/tmuxinator/` | Full replacement via stow (if `user/tmuxinator/` exists) |
-| herdr    | `configs/herdr/.config/herdr/config.toml` | Full replacement via stow (if `user/herdr/` exists) |
 | claude   | `configs/claude/.claude/` (per-item symlinks) | Entirely in `user/claude/` (skills, commands, agents, hooks, settings.json) |
 
 All includes fail silently if the user file doesn't exist.
